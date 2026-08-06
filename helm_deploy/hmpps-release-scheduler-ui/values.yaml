@@ -46,12 +46,15 @@ generic-service:
       CLIENT_CREDS_CLIENT_SECRET: 'CLIENT_CREDS_CLIENT_SECRET'
     hmpps-release-scheduler-ui-auth-code:
       AUTH_CODE_CLIENT_ID: 'AUTH_CODE_CLIENT_ID'
-      AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'    
+      AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'
     hmpps-release-scheduler-ui-session-secret:
       SESSION_SECRET: 'SESSION_SECRET'
     hmpps-release-scheduler-ui-elasticache-redis:
       REDIS_HOST: 'primary_endpoint_address'
       REDIS_AUTH_TOKEN: 'auth_token'
+    hmpps-release-scheduler-ui-sentry:
+      SENTRY_DSN: "SENTRY_DSN"
+      SENTRY_LOADER_SCRIPT_ID: "SENTRY_LOADER_SCRIPT_ID"
     hmpps-release-scheduler-ui-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     # This secret will need to be created in your namespace (note it isn't in hmpps-templates-dev)

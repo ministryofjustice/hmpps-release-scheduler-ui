@@ -2,6 +2,9 @@ import express from 'express'
 
 import createError from 'http-errors'
 
+import * as Sentry from '@sentry/node'
+import config from './config'
+
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
@@ -18,6 +21,9 @@ import setUpWebSession from './middleware/setUpWebSession'
 import routes from './routes'
 import type { Services } from './services'
 
+import './sentry'
+import sentryMiddleware from './middleware/sentryMiddleware'
+
 export default function createApp(services: Services): express.Application {
   const app = express()
 
@@ -25,6 +31,7 @@ export default function createApp(services: Services): express.Application {
   app.set('trust proxy', true)
   app.set('port', process.env.PORT || 3000)
 
+  app.use(sentryMiddleware())
   app.use(setUpHealthChecks(services.applicationInfo))
   app.use(setUpWebSecurity())
   app.use(setUpWebSession())
@@ -37,6 +44,8 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpCurrentUser())
 
   app.use(routes(services))
+
+  if (config.sentry.dsn) Sentry.setupExpressErrorHandler(app)
 
   app.use((_req, _res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))

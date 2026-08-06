@@ -82,6 +82,14 @@ export default {
       agent: new AgentConfig(Number(get('EXAMPLE_API_TIMEOUT_RESPONSE', 5000))),
     },
   },
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+    loaderScriptId: process.env.SENTRY_LOADER_SCRIPT_ID,
+    environment: get('SENTRY_ENVIRONMENT', 'local', requiredInProduction),
+    tracesSampleRate: Number(get('SENTRY_TRACES_SAMPLE_RATE', 0.05)),
+    replaySampleRate: Number(get('SENTRY_REPLAY_SAMPLE_RATE', 0.0)),
+    replayOnErrorSampleRate: Number(get('SENTRY_REPLAY_ON_ERROR_SAMPLE_RATE', 0.1)),
+  },
   sqs: {
     audit: auditConfig(),
   },
