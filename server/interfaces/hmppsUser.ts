@@ -1,4 +1,5 @@
 import { UUID } from 'crypto'
+import { CaseLoad } from './caseLoad'
 
 export type AuthSource = 'nomis' | 'delius' | 'external' | 'azuread'
 
@@ -60,4 +61,15 @@ export interface AzureADUser extends BaseUser {
   authSource: 'azuread'
 }
 
-export type HmppsUser = PrisonUser | ProbationUser | ExternalUser | AzureADUser
+export enum UserPermissionLevel {
+  FORBIDDEN = 0,
+  VIEW_ONLY = 1,
+  MANAGE = 2,
+}
+
+export type HmppsUser = (PrisonUser | ProbationUser | ExternalUser | AzureADUser) & {
+  caseLoads: CaseLoad[] | undefined
+  activeCaseLoad?: CaseLoad | undefined
+  getActiveCaseloadId: () => string | undefined
+  permission: UserPermissionLevel
+}

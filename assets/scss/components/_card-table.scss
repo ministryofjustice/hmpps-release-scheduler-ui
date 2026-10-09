@@ -1,0 +1,70 @@
+.card-table-row-container {
+  display: flex;
+}
+
+.card-table-row-checkbox {
+  width: 50px;
+}
+
+.card-table-row-checkbox .govuk-checkboxes {
+  margin-top: -10px;
+}
+
+.card-table-row-width-90 {
+  width: 90%;
+}
+
+.card-table-row {
+  margin-top: 15px;
+}
+
+.card-table-column {
+  box-sizing: border-box;
+  padding: 0 15px;
+  display: inline-block;
+  vertical-align: top;
+
+  &__50 {
+    width: 49%;
+  }
+
+  &__45 {
+    width: 44%;
+  }
+
+  &__40 {
+    width: 39%;
+  }
+
+  &__35 {
+    width: 34%;
+  }
+
+  &__30 {
+    width: 29%;
+  }
+
+  &__25 {
+    width: 24%;
+  }
+
+  &__20 {
+    width: 19%;
+  }
+
+  &__15 {
+    width: 14%;
+  }
+
+  &__10 {
+    width: 9%;
+  }
+
+  &__5 {
+    width: 5%;
+  }
+}
+
+.align-right {
+  text-align: right;
+}

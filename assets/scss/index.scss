@@ -9,3 +9,16 @@ $govuk-page-width: $moj-page-width;
 
 @import './components/header-bar';
 @import './overrides/local';
+
+@import 'node_modules/accessible-autocomplete/dist/accessible-autocomplete.min';
+
+@import './components/header-bar';
+@import './overrides/local';
+@import './components/card';
+@import './components/mini-profile';
+@import './components/autocomplete';
+@import './components/hmpps-side-filter';
+@import './components/card-table';
+@import './components/api-error';
+@import './components/collapsible_notes';
+@import './components/horizontal-search-form';

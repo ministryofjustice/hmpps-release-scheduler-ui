@@ -1,0 +1,58 @@
+{% extends "partials/layout.njk" %}
+
+{% set fullScreen = true %}
+{% set fullWidth = true %}
+
+{% block innerContent %}
+  <div class="govuk-width-container">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6 govuk-!-margin-top-0">Schedule a release for a prisoner</h1>
+  </div>
+  <div class="homepage-card-background">
+    <div class="govuk-width-container">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <div class="card-group govuk-grid-row">
+
+            {% if user | hasPermission('MANAGE') %}
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="/search-prisoner/schedule-a-release">Schedule release</a>
+                  </h2>
+                  <p class="govuk-body card__description">Confirm release date and schedule a prisoner for release.</p>
+                </div>
+              </div>
+
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="/scheduled-transfers">Manage scheduled transfers</a>
+                  </h2>
+                  <p class="govuk-body card__description">View, update and cancel scheduled transfers.</p>
+                </div>
+              </div>
+
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="/releases">Manage scheduled releases</a>
+                  </h2>
+                  <p class="govuk-body card__description">View, update and verify scheduled releases.</p>
+                </div>
+              </div>
+            {% else %}
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="/releases">View scheduled releases</a>
+                  </h2>
+                  <p class="govuk-body card__description">View scheduled releases.</p>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

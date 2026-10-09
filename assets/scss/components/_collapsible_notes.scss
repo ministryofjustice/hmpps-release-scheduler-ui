@@ -1,0 +1,40 @@
+.collapsible-note-full {
+  display: none;
+}
+
+.collapsible-note-truncated {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collapsible-note-truncated:has(+ details[open]) {
+  display: none;
+}
+details[open] .collapsible-note-full {
+  display: inline;
+}
+
+.upward {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.collapsible-note-details > summary {
+  list-style: none;
+  color: $govuk-link-colour;
+  cursor: pointer;
+}
+
+.collapsible-note-details > summary::marker {
+  content: "";
+}
+
+.collapsible-note-details summary::before {
+  content: "Show details";
+}
+
+.collapsible-note-details[open] summary::before {
+  content: "Show preview";
+}

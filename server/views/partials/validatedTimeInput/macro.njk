@@ -1,0 +1,78 @@
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+
+{#
+Parameters:
+   validatedTimeInput = a component to render Hour Minute input fields with correct validation errors.
+
+  input field names are "Hour" and "Minute" prefixed with the name parameter.
+  eg,
+  Component name: startTime
+  Hour input name: startTimeHour
+  Minute input name: startTimeMinute
+
+  validationErrors should use the same names as keys to report error.
+  In case both input fields need to be marked in red border, but there is only one error message (linking to the Hour field),
+  an empty error message should be added to the component name (eg, startTime) as validationErrors key.
+#}
+
+{% macro validatedTimeInput(opts) %}
+  {% set id = opts.id %}
+  {% set name = opts.name or id %}
+  {% set fieldset = opts.fieldset %}
+  {% set hint = opts.hint %}
+  {% set classes = opts.classes %}
+  {% set addAnother = opts.addAnother %}
+
+  {% set hour = opts.hour %}
+  {% set minute = opts.minute %}
+
+  {% if opts.validationErrors %}
+    {% if addAnother %}
+      {% set timeError = opts.validationErrors[addAnother.id + '[' + addAnother.index + '][' + name + ']'] %}
+      {% set hourError = opts.validationErrors[addAnother.id + '[' + addAnother.index + '][' + name + 'Hour]'] or '' %}
+      {% set minuteError = opts.validationErrors[addAnother.id + '[' + addAnother.index + '][' + name + 'Minute]'] or '' %}
+    {% else %}
+      {% set timeError = opts.validationErrors[name] %}
+      {% set hourError = opts.validationErrors[name + 'Hour'] or '' %}
+      {% set minuteError = opts.validationErrors[name + 'Minute'] or '' %}
+    {% endif %}
+  {% endif %}
+
+  {% macro joinErrors(errors) %}
+    {% if errors %}{% for error in errors %}{% if error and error.length > 0 %}{{ error }}{% endif %}{% endfor %}{% endif %}
+  {% endmacro %}
+
+  {{ govukDateInput({
+    id: id,
+    name: name,
+    fieldset: fieldset,
+    hint: hint,
+    errorMessage: {
+      html: '<span id="hour-error" class="govuk-error-message">' + joinErrors(hourError) + '</span><span id="minute-error" class="govuk-error-message">' + joinErrors(minuteError) + '</span>'
+    } if hourError or minuteError,
+    items: [
+      {
+        id: (addAnother.id + '[' + addAnother.index + '][' + name + 'Hour]') if addAnother else (name + 'Hour'),
+        name: (addAnother.id + '[' + addAnother.index + '][' + name + 'Hour]') if addAnother else (name + 'Hour'),
+        attributes: {
+          "data-id": addAnother.id + "[%index%][" + name + "Hour]",
+          "data-name": addAnother.id + "[%index%][" + name + "Hour]"
+        } if addAnother else undefined,
+        label: "Hour",
+        value: hour,
+        classes: 'govuk-input--width-2' + (' govuk-input--error' if hourError or timeError)
+      },
+      {
+        id: (addAnother.id + '[' + addAnother.index + '][' + name + 'Minute]') if addAnother else (name + 'Minute'),
+        name: (addAnother.id + '[' + addAnother.index + '][' + name + 'Minute]') if addAnother else (name + 'Minute'),
+        attributes: {
+          "data-id": addAnother.id + "[%index%][" + name + "Minute]",
+          "data-name": addAnother.id + "[%index%][" + name + "Minute]"
+        } if addAnother else undefined,
+        label: "Minute",
+        value: minute,
+        classes: 'govuk-input--width-2' + (' govuk-input--error' if minuteError or timeError)
+      }
+    ]
+  }) }}
+{% endmacro %}
