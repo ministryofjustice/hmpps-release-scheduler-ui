@@ -1,0 +1,70 @@
+{#
+Parameters:
+  auditHistory = a component to render audit history with MOJ Time Line component.
+
+  actions - array of actions in audit options, expected to contains:
+              heading: heading text of the audit entry
+              content (optional): content text of the audit entry
+              changes (optional): array of changes made by the action
+              reason (optional): reason of the action
+              reasonRequested (boolean): whether user has been requested to enter a reason when taking the action
+              occurredAt: datetime of when the action was taken
+              user: { user: string, username: string }
+
+  prisonerName - First-Name Last-Name of the prisoner to be injected into actions.content
+
+  case_notes.scss style file is required for the expand/shrink function of long reason text.
+#}
+
+{%- from "moj/components/timeline/macro.njk" import mojTimeline -%}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% macro auditHistory(opts) %}
+  {% set actions = opts.actions %}
+  {% set prisonerName = opts.prisonerName %}
+
+  {% set timeLineItems = [] %}
+  {% for action in actions %}
+    {% set itemHtml %}
+      {% if action.content %}
+        {{ action.content | replace('<prisoner>', prisonerName) | escape }}
+      {% endif %}
+      {% if action.changes %}
+        {% set changeDetailsHtml %}
+          {% for change in action.changes %} <p>{{ change }}</p> {% endfor %}
+        {% endset %}
+        {{ govukDetails({
+          summaryText: "View update details",
+          html: changeDetailsHtml
+        }) }}
+      {% endif %}
+      {% if action.reason %}
+        <br/><br/>
+        {% if action.reason.length > 200 %}
+          <span class="collapsible-note-truncated">Reason: {{ action.reason | escape }}</span>
+          <details class="no-margin upward collapsible-note-details">
+            <summary aria-label="show reason" class="govuk-details__summary-text"></summary>
+            <div class="collapsible-note-full">Reason: {{ action.reason | escape | nl2br | safe }}</div>
+          </details>
+        {% else %}
+          Reason: {{ action.reason | escape | nl2br }}
+        {% endif %}
+      {% endif %}
+      {% if action.reasonRequested and not action.reason %}
+        <br/><br/>
+        {{ action.user.name }} did not enter a reason.
+      {% endif %}
+    {% endset %}
+
+    {% set timeLineItems = (timeLineItems.push({
+      label: { text: action.heading },
+      html: itemHtml,
+      datetime: { timestamp: action.occurredAt, type: 'datetime' },
+      byline: { text: action.user.name + ' (' + action.user.username + ')' } if action.user else null
+    }), timeLineItems) %}
+  {% endfor %}
+
+  {{ mojTimeline({
+    items: timeLineItems
+  }) }}
+{% endmacro %}

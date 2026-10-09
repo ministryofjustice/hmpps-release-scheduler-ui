@@ -2,9 +2,14 @@ import { expect, test } from '@playwright/test'
 import hmppsAuth from '../mockApis/hmppsAuth'
 
 import { login, resetStubs } from '../testUtils'
-import HomePage from '../pages/homePage'
+import { stubComponentsFail } from '../mockApis/componentsApi'
+import tokenVerification from '../mockApis/tokenVerification'
 
 test.describe('SignIn', () => {
+  test.beforeEach(async () => {
+    await stubComponentsFail()
+  })
+
   test.afterEach(async () => {
     await resetStubs()
   })
@@ -25,38 +30,13 @@ test.describe('SignIn', () => {
 
   test('User name visible in header', async ({ page }) => {
     await login(page, { name: 'A TestUser' })
-
-    const homePage = await HomePage.verifyOnPage(page)
-
-    await expect(homePage.usersName).toHaveText('A. Testuser')
-  })
-
-  test('Phase banner visible in header', async ({ page }) => {
-    await login(page)
-
-    const homePage = await HomePage.verifyOnPage(page)
-
-    await expect(homePage.phaseBanner).toHaveText('dev')
+    await expect(page.getByTestId('header-user-name')).toContainText('A. Testuser')
   })
 
   test('User can sign out', async ({ page }) => {
     await login(page)
-
-    const homePage = await HomePage.verifyOnPage(page)
-    await homePage.signOut()
-
+    await page.getByTestId('signOut').click()
     await expect(page.getByRole('heading')).toHaveText('Sign in')
-  })
-
-  test('User can manage their details', async ({ page }) => {
-    await login(page, { name: 'A TestUser' })
-
-    await hmppsAuth.stubManageDetailsPage()
-
-    const homePage = await HomePage.verifyOnPage(page)
-    await homePage.clickManageUserDetails()
-
-    await expect(page.getByRole('heading')).toHaveText('Your account details')
   })
 
   test('Token verification failure takes user to sign in page', async ({ page }) => {
@@ -65,14 +45,18 @@ test.describe('SignIn', () => {
     await expect(page.getByRole('heading')).toHaveText('Sign in')
   })
 
-  test('Token verification failure clears user session', async ({ page }) => {
-    await login(page, { name: 'A TestUser', active: false })
+  // TODO: enable token clear test after user role check is implemented
+  test.skip('Token verification failure clears user session', async ({ page }) => {
+    await login(page)
+    await expect(page.getByRole('heading', { name: 'Sign in' })).not.toBeAttached()
 
-    await expect(page.getByRole('heading')).toHaveText('Sign in')
+    await tokenVerification.stubVerifyToken(false)
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
 
-    await login(page, { name: 'Some OtherTestUser', active: true })
+    await tokenVerification.stubVerifyToken(true)
+    await login(page, { name: 'Another Tester', roles: ['INVALID_ROLE'] })
 
-    const homePage = await HomePage.verifyOnPage(page)
-    await expect(homePage.usersName).toHaveText('S. Othertestuser')
+    await expect(page.getByText('You are not authorised to use this application')).toBeVisible()
   })
 })

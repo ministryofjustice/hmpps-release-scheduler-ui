@@ -1,0 +1,8 @@
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+
+{{ govukPhaseBanner({
+  tag: {
+    text: "Beta"
+  },
+  html: 'This is a new service - your <a href="mailto:external-movements-rollout@justice.gov.uk">feedback (opens email in new window)</a> will help us to improve it.'
+}) }}

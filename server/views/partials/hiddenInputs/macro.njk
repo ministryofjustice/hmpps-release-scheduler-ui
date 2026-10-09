@@ -1,0 +1,11 @@
+{% macro hiddenInputs(queryEntries) %}
+  {% for entry in queryEntries %}
+    {% if entry[1] | isArray %}
+      {% for val in entry[1] %}
+        <input type="hidden" name="{{ entry[0] }}" value="{{ val }}"/>
+      {% endfor %}
+    {% else %}
+      <input type="hidden" name="{{ entry[0] }}" value="{{ entry[1] }}"/>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}

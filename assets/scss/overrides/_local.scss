@@ -1,3 +1,57 @@
 .govuk-main-wrapper {
-  min-height: 600px;
+  min-height: 400px;
+}
+
+.homepage-card-background {
+  padding: 30px 0;
+  background: #f0f4f5;
+}
+
+.block-background {
+  background-color: #F0F4F5;
+  padding: 30px 15px;
+}
+
+.disable-link {
+  pointer-events: none;
+  cursor: default;
+}
+
+.govuk-table__header {
+  button {
+    svg {
+      overflow: visible;
+    }
+  }
+}
+
+.placeholder-background {
+  background-color: #e5e5f710;
+  background-image: radial-gradient( ellipse farthest-corner at 10px 10px , #444cf710, #444cf710 50%, #e5e5f710 50%);
+  background-size: 10px 10px;
+}
+
+.float-right {
+  float: right;
+}
+
+.shift-right-20 {
+  margin-right: -20px!important;
+}
+
+.summary-list-subheading {
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.search-button {
+  display: inline-block;
+  width: auto;
+  margin-bottom: 2px;
+  margin-left: 10px;
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: flex-end;
 }

@@ -1,16 +1,116 @@
 {% extends "govuk/template.njk" %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+
+{% set mainClasses = "app-container govuk-body" %}
 
 {% block head %}
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
+
+  {% for js in feComponents.jsIncludes %}
+    <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
+  {% endfor %}
+
+  {% for css in feComponents.cssIncludes %}
+    <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet"/>
+  {% endfor %}
 {% endblock %}
 
-{% block pageTitle %}{{pageTitle | default(applicationName)}}{% endblock %}
+{% set errorSummaryList = validationErrors | buildErrorSummaryList %}
+
+{% if errorSummaryList.length > 0 %}
+  {% set pageTitlePrefix = 'Error: ' %}
+{% elseif searchResultCount !== undefined %}
+  {% if searchResultCount === 0 %}
+    {% set pageTitlePrefix = 'No results found: ' %}
+  {% elseif searchResultCount === 1 %}
+    {% set pageTitlePrefix = '1 result found: ' %}
+  {% else %}
+    {% set pageTitlePrefix = searchResultCount + ' results found: ' %}
+  {% endif %}
+{% endif %}
+
+{% block pageTitle %}{{ pageTitlePrefix or '' }}{{pageTitle or 'Schedule a release for a prisoner'}} - DPS{% endblock %}
 
 {% block header %}
-  {% include "./header.njk" %}
+  {{ feComponents.header | safe }}
+  {% block meta %}{% endblock %}
 {% endblock %}
 
-{% block bodyStart %}
+{% block container %}
+<div class="govuk-width-container {%- if containerClasses %} {{ containerClasses }}{% endif %}" {{- govukAttributes(containerAttributes) }}>
+  {% block containerStart %}{% block beforeContent %}
+    {% include "partials/phase-banner.njk" %}
+
+    {% if backUrl %}
+      {{ govukBackLink({
+        text: backLabel or "Back",
+        href: backUrl
+      }) }}
+    {% endif %}
+
+    {% if showBreadcrumbs and breadcrumbs and(not backUrl) %}
+      <div class="govuk-!-display-none-print">
+        <div>
+          {{ govukBreadcrumbs({
+            items: breadcrumbs.items
+          }) }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if errorSummaryList.length > 0 %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: (errorSummaryList | customErrorOrderBuilder(customErrorOrder)) if customErrorOrder else errorSummaryList,
+            classes: 'govuk-!-margin-top-3 govuk-!-margin-bottom-0'
+          }) }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if prisonerDetails %}
+      {{ miniProfile(prisonerDetails, originalUrl) }}
+    {% endif %}
+
+    {% block pageHeader %}{% endblock %}
+  {% endblock %}{% endblock %}
+</div>
+
+<div class="{{ "" if fullScreen else "govuk-width-container" }} {%- if containerClasses %} {{ containerClasses }}{% endif %}" {{- govukAttributes(containerAttributes) }}>
+  {% block main %}
+  <main class="govuk-main-wrapper {%- if mainClasses %} {{ mainClasses }}{% endif %}" id="main-content" {%- if mainLang %} lang="{{ mainLang }}"{% endif %} {{- govukAttributes(mainAttributes) }}>
+    {% block content %}
+    {% if successBanner %}
+      {{ govukNotificationBanner({
+        text: successBanner,
+        type: "success"
+      }) }}
+    {% endif %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-body {% if fullWidth %}govuk-grid-column-full{% else %}govuk-grid-column-two-thirds{% endif %}">
+        {% addHistory %}
+        {% block innerContent %}{% endblock %}
+        {% history %}
+        {{ history | dump | safe }}
+        {% endAddHistory %}
+      </div>
+    </div>
+    {% endblock %}
+  </main>
+  {% endblock %}
+  {% block containerEnd %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block footer %}
+  {{ feComponents.footer | safe }}
 {% endblock %}
 
 {% block bodyEnd %}

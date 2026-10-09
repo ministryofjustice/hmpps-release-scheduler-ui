@@ -1,0 +1,88 @@
+{#
+Parameters:
+  columns = [{ text: string, width: 5 | 10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 }]
+  rows = [{ title: { html: string or text: string }, action: { href: string, text: string }, data: ['row 1 col 1', 'row 1 col 2']}]
+#}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% macro cardTable(opts) %}
+  {% set columns = opts.columns %}
+  {% set rows = opts.rows %}
+
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
+
+  {% for row in rows %}
+    <div class="card-table-row-container">
+      {% if opts.checkboxName %}
+        <div class="card-table-row-checkbox">
+          {{ govukCheckboxes({
+            name: opts.checkboxName,
+            classes: "govuk-checkboxes--small",
+            items: [
+              {
+                id: opts.checkboxName + "-" + loop.index,
+                value: row.checkboxValue,
+                html: '<span class="govuk-visually-hidden">Select ' + row.checkboxLabel + '</span>'
+              }
+            ] | setCheckedValue(opts.selectedValues or '')
+          }) }}
+        </div>
+      {% endif %}
+
+      <div class="{{ 'card-table-row-width-90' if opts.checkboxName else 'govuk-!-width-full' }}">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            {% if row.title.html %}
+              {{ row.title.html | safe }}
+            {% else %}
+              <strong>{{ row.title.text }}</strong>
+            {% endif %}
+          </div>
+          {% if row.action %}
+            {% if row.action.href %}
+              <div class="align-right govuk-!-margin-right-4">
+                <a class="govuk-link govuk-link--no-visited-state" href="{{ row.action.href }}">
+                  {% if row.action.html %}
+                    {{ row.action.html | safe }}
+                  {% else %}
+                    {{ row.action.text }}
+                  {% endif %}
+                </a>
+              </div>
+            {% else %}
+              {% if row.action.html %}
+                {{ row.action.html | safe }}
+              {% else %}
+                {{ row.action.text }}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <div class="govuk-grid-row">
+          {% set dataIdx = 0 %}
+
+          {% for rowOfColumns in columns %}
+            <div class="card-table-row">
+              {% for column in rowOfColumns %}
+                <div class="card-table-column card-table-column__{{ column.width }}">
+                  <strong>{{ column.text }}</strong><br/>
+                  {% if row.data[dataIdx].html %}
+                    {{ row.data[dataIdx].html | safe }}
+                  {% else %}
+                    {{ row.data[dataIdx] }}
+                  {% endif %}
+                </div>
+
+                {% set dataIdx = dataIdx + 1 %}
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
+  {% endfor %}
+{% endmacro %}
