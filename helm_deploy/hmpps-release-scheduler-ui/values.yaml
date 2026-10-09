@@ -3,9 +3,9 @@ generic-service:
   productId: 'DPS139' # productId for the product that this belongs too, i.e. DPS001, see README.md for details
 
   # the IRSA service account name for accessing AWS resources
-  # serviceAccountName: "hmpps-release-scheduler-ui"
+  serviceAccountName: "hmpps-release-scheduler-ui"
 
-  replicaCount: 4
+  replicaCount: 2
 
   image:
     repository: ghcr.io/ministryofjustice/hmpps-release-scheduler-ui
@@ -32,7 +32,7 @@ generic-service:
     REDIS_TLS_ENABLED: 'true'
     TOKEN_VERIFICATION_ENABLED: 'true'
     AUDIT_SQS_REGION: 'eu-west-2'
-    AUDIT_SERVICE_NAME: 'DPS139' # Your audit service name
+    AUDIT_SERVICE_NAME: 'hmpps-release-scheduler-ui' # Your audit service name
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
@@ -59,8 +59,12 @@ generic-service:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     # This secret will need to be created in your namespace (note it isn't in hmpps-templates-dev)
     # IRSA configuration in your namespace will also be required, and then uncomment serviceAccountName above.
-    # sqs-hmpps-audit-secret:
-    #   AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
+    sqs-hmpps-audit-secret:
+      AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
+
+  allowlist:
+    groups:
+      - internal
 
 generic-prometheus-alerts:
   targetApplication: hmpps-release-scheduler-ui

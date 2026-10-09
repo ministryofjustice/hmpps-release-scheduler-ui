@@ -47,6 +47,10 @@ export default {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', 120)),
   },
+  serviceUrls: {
+    digitalPrison: get('DPS_HOME_PAGE_URL', 'http://localhost:3001', requiredInProduction),
+    prisonerProfile: get('PRISONER_PROFILE_URL', 'http://localhost:3001', requiredInProduction),
+  },
   apis: {
     hmppsAuth: {
       url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
@@ -72,14 +76,31 @@ export default {
       agent: new AgentConfig(Number(get('TOKEN_VERIFICATION_API_TIMEOUT_RESPONSE', 5000))),
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
-    exampleApi: {
-      url: get('EXAMPLE_API_URL', 'http://localhost:8080', requiredInProduction),
+    componentApi: {
+      url: get('COMPONENT_API_URL', 'http://localhost:8082', requiredInProduction),
+      timeout: {
+        response: Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 2500)),
+        deadline: Number(get('COMPONENT_API_TIMEOUT_DEADLINE', 2500)),
+      },
+      agent: new AgentConfig(Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 2500))),
+    },
+    prisonApi: {
+      healthPath: '/health/ping',
+      url: get('PRISON_API_URL', 'http://127.0.0.1:8080', requiredInProduction),
+      timeout: {
+        response: Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('PRISON_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000))),
+    },
+    prisonerSearchApi: {
+      url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8082', requiredInProduction),
       healthPath: '/health/ping',
       timeout: {
-        response: Number(get('EXAMPLE_API_TIMEOUT_RESPONSE', 5000)),
-        deadline: Number(get('EXAMPLE_API_TIMEOUT_DEADLINE', 5000)),
+        response: Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 20000)),
+        deadline: Number(get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 20000)),
       },
-      agent: new AgentConfig(Number(get('EXAMPLE_API_TIMEOUT_RESPONSE', 5000))),
+      agent: new AgentConfig(Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 20000))),
     },
   },
   sentry: {

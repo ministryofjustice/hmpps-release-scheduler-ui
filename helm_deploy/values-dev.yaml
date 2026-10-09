@@ -11,6 +11,12 @@ generic-service:
     INGRESS_URL: "https://release-scheduler-dev.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-dev.prison.service.justice.gov.uk"
+    COMPONENT_API_URL: "https://frontend-components-dev.hmpps.service.justice.gov.uk" # used by hmpps-connect-dps-components module
+    PRISON_API_URL: "https://prison-api-dev.prison.service.justice.gov.uk" # used by hmpps-connect-dps-components module
+    PRISONER_SEARCH_API_URL: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    DPS_HOME_PAGE_URL: "https://digital-dev.prison.service.justice.gov.uk"
+    PRISONER_PROFILE_URL: "https://prisoner-dev.digital.prison.service.justice.gov.uk"
+    EXTERNAL_MOVEMENTS_URL: "https://external-movements-dev.hmpps.service.justice.gov.uk"
     EXAMPLE_API_URL: 'https://template-kotlin-dev.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     SENTRY_ENVIRONMENT: DEV
@@ -36,4 +42,5 @@ generic-service:
 
 
 generic-prometheus-alerts:
-  alertSeverity: NON_PROD_ALERTS_SEVERITY_LABEL
+  alertSeverity: move-and-improve-alerts-non-prod
+  businessHoursOnly: true
