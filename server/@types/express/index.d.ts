@@ -23,6 +23,9 @@ export declare global {
 
     interface Locals {
       user: HmppsUser
+      digitalPrisonServicesUrl: string
+      externalMovementsUrl: string
+      prisonerProfileUrl: string
       cspNonce: string
       csrfToken: string
       asset_path: string

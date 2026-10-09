@@ -7,6 +7,9 @@ declare global {
       REDIS_AUTH_TOKEN: string
       APPLICATIONINSIGHTS_CONNECTION_STRING: string
       NO_HTTPS?: string
+      CI?: string
+      DEBUG_TELEMETRY?: string
+      BUILD_NUMBER?: string
     }
   }
 }
