@@ -1,12 +1,14 @@
 import { expect, test } from '@playwright/test'
-import exampleApi from '../mockApis/exampleApi'
+
 import hmppsAuth from '../mockApis/hmppsAuth'
 import tokenVerification from '../mockApis/tokenVerification'
 
 import { resetStubs } from '../testUtils'
+import { stubPrisonApiHealth } from '../mockApis/prisonApi'
+import { stubPrisonerSearchPing } from '../mockApis/prisonerSearchApi'
 
 // NB: add new mock apis here:
-const mockApis = [hmppsAuth, tokenVerification, exampleApi]
+const mockApis = [hmppsAuth, tokenVerification]
 
 test.describe('Health', () => {
   test.afterEach(async () => {
@@ -15,7 +17,7 @@ test.describe('Health', () => {
 
   test.describe('All healthy', () => {
     test.beforeEach(async () => {
-      await Promise.all(mockApis.map(api => api.stubPing()))
+      await Promise.all([...mockApis.map(api => api.stubPing()), stubPrisonApiHealth(), stubPrisonerSearchPing()])
     })
 
     test('Health check is accessible and status is UP', async ({ page }) => {
@@ -38,7 +40,7 @@ test.describe('Health', () => {
   })
 
   test.describe('Some unhealthy', () => {
-    test('Health check status is down for 1 api', async ({ page }) => {
+    test('Health check status is down for 3 api', async ({ page }) => {
       await Promise.all(mockApis.map(api => (api === tokenVerification ? api.stubPing(500) : api.stubPing())))
 
       const response = await page.request.get('/health')
@@ -53,7 +55,7 @@ test.describe('Health', () => {
           (downCount, api) => (api.status === 'DOWN' ? downCount + 1 : downCount),
           0,
         ),
-      ).toEqual(1)
+      ).toEqual(3)
     })
   })
 })

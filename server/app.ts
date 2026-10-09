@@ -1,8 +1,9 @@
-import express from 'express'
+import express, { Request } from 'express'
 
 import createError from 'http-errors'
 
 import * as Sentry from '@sentry/node'
+import { telemetryMiddleware } from '@ministryofjustice/hmpps-azure-telemetry'
 import config from './config'
 
 import nunjucksSetup from './utils/nunjucksSetup'
@@ -21,7 +22,6 @@ import setUpWebSession from './middleware/setUpWebSession'
 import routes from './routes'
 import type { Services } from './services'
 
-import './sentry'
 import sentryMiddleware from './middleware/sentryMiddleware'
 
 export default function createApp(services: Services): express.Application {
@@ -43,12 +43,18 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
 
+  app.use(
+    telemetryMiddleware.addUserMetadataToTelemetry({
+      getAttributes: (req: Request) => ({ username: req.user?.username }),
+    }),
+  )
+
   app.use(routes(services))
 
   if (config.sentry.dsn) Sentry.setupExpressErrorHandler(app)
 
   app.use((_req, _res, next) => next(createError(404, 'Not found')))
-  app.use(errorHandler(process.env.NODE_ENV === 'production'))
+  app.use(errorHandler(process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'e2e-test'))
 
   return app
 }

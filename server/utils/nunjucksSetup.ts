@@ -11,7 +11,7 @@ export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
 
   app.locals.asset_path = '/assets/'
-  app.locals.applicationName = 'HMPPS Release Scheduler Ui'
+  app.locals.applicationName = 'Schedule a release for a prisoner'
   app.locals.environmentName = config.environmentName
   app.locals.environmentNameColour = config.environmentName === 'PRE-PRODUCTION' ? 'govuk-tag--green' : ''
   let assetManifest: Record<string, string> = {}
@@ -25,11 +25,21 @@ export default function nunjucksSetup(app: express.Express): void {
     }
   }
 
+  app.use((_req, res, next) => {
+    res.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
+    res.locals.prisonerProfileUrl = config.serviceUrls.prisonerProfile
+    return next()
+  })
+
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
+      path.join(__dirname, '../../server/routes'),
+      path.join(__dirname, '../../server/routes/journeys'),
       'node_modules/govuk-frontend/dist/',
       'node_modules/@ministryofjustice/frontend/',
+      'node_modules/@ministryofjustice/hmpps-connect-dps-components/dist/assets/',
+      'node_modules/@ministryofjustice/hmpps-connect-dps-shared-items/dist/assets/',
     ],
     {
       autoescape: true,
