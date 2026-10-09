@@ -22,7 +22,7 @@ export const login = async (
     hmppsAuth.favicon(),
     hmppsAuth.stubSignInPage(),
     hmppsAuth.stubSignOutPage(),
-    hmppsAuth.token({ name, roles, authSource }),
+    hmppsAuth.token({ name: name ?? 'NO_NAME', roles, authSource }),
     tokenVerification.stubVerifyToken(active),
   ])
   return attemptHmppsAuthLogin(page)
