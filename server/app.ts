@@ -27,6 +27,8 @@ import { auditApiCallMiddleware } from './middleware/audit/auditApiCallMiddlewar
 import logger from '../logger'
 import PrisonerImageController from './routes/prisonerImageController'
 import { handleApiError } from './middleware/validation/handleApiError'
+import { AuthorisedRoles } from './middleware/permissions/populateUserPermissions'
+import { serviceEnabledMiddleware } from './middleware/permissions/serviceEnabledMiddleware'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -61,8 +63,7 @@ export default function createApp(services: Services): express.Application {
     },
   )
 
-  // TODO: add user roles to authorisationMiddleware after roles are created
-  app.use(authorisationMiddleware())
+  app.use(authorisationMiddleware([AuthorisedRoles.RELEASE_SCHEDULER_RO, AuthorisedRoles.RELEASE_SCHEDULER_RW]))
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
 
@@ -97,8 +98,8 @@ export default function createApp(services: Services): express.Application {
       getAttributes: (req: Request) => ({ username: req.user?.username }),
     }),
   )
-  // TODO: enable serviceEnabledMiddleware after service is added to micro frontend component
-  // app.get(/(.*)/, serviceEnabledMiddleware)
+
+  app.get(/(.*)/, serviceEnabledMiddleware)
 
   app.use(routes(services))
 
