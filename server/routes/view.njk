@@ -1,48 +1,170 @@
 {% extends "partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+{% from "partials/hiddenInputs/macro.njk" import hiddenInputs %}
+{% from "partials/simplePagination/macro.njk" import simplePagination %}
+{% from "partials/cardTable/macro.njk" import cardTable %}
+{% from "partials/statusTag/macro.njk" import statusTag %}
 
 {% set fullScreen = true %}
 {% set fullWidth = true %}
+{% set pageTitle = 'Search for releases - Schedule and manage releases' %}
+
+{% if not hasValidationError %}
+  {% set searchResultCount = paginationParams.totalRows %}
+{% endif %}
 
 {% block innerContent %}
   <div class="govuk-width-container">
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-6 govuk-!-margin-top-0">Schedule a release for a prisoner</h1>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <span class="govuk-caption-l">Schedule and manage releases</span>
+        <h1 class="govuk-heading-l">Search for releases</h1>
+
+        <p>Search for an individual prisoner’s release, or filter upcoming releases by date and release status. To search for a prisoner, clear the date range first.</p>
+      </div>
+    </div>
   </div>
-  <div class="homepage-card-background">
+
+  <div class="block-background govuk-!-padding-top-6 govuk-!-padding-bottom-1 govuk-!-margin-bottom-7">
     <div class="govuk-width-container">
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <div class="card-group govuk-grid-row">
+      <search class="moj-search govuk-!-width-two-thirds">
+        <form method="GET">
+          {{ hiddenInputs(query | getQueryEntries(['history'])) }}
+          <div class="search-wrapper moj-search__input-wrapper">
+            {{ govukInput({
+              name: 'searchTerm',
+              classes: "moj-search__input",
+              label: {
+                text: "Enter prisoner name or prison number."
+              },
+              value: searchTerm,
+              errorMessage: validationErrors | findError('searchTerm')
+            }) }}
 
-            {% if user | hasPermission('MANAGE') %}
-              <div class="govuk-grid-column-one-third card-group__item">
-                <div class="card card--clickable">
-                  <h2 class="govuk-heading-m card__heading">
-                    <a class="govuk-link govuk-link--no-visited-state card__link" href="/search-prisoner/schedule-a-release">Schedule release</a>
-                  </h2>
-                  <p class="govuk-body card__description">Confirm release date and schedule a prisoner for release.</p>
-                </div>
-              </div>
-
-              <div class="govuk-grid-column-one-third card-group__item">
-                <div class="card card--clickable">
-                  <h2 class="govuk-heading-m card__heading">
-                    <a class="govuk-link govuk-link--no-visited-state card__link" href="/releases">Manage scheduled releases</a>
-                  </h2>
-                  <p class="govuk-body card__description">View, update and verify scheduled releases.</p>
-                </div>
-              </div>
-            {% else %}
-              <div class="govuk-grid-column-one-third card-group__item">
-                <div class="card card--clickable">
-                  <h2 class="govuk-heading-m card__heading">
-                    <a class="govuk-link govuk-link--no-visited-state card__link" href="/releases">View scheduled releases</a>
-                  </h2>
-                  <p class="govuk-body card__description">View scheduled releases.</p>
-                </div>
-              </div>
-            {% endif %}
+            {{ govukButton({
+              classes: "search-button",
+              text: "Search",
+              preventDoubleClick: true
+            }) }}
           </div>
-        </div>
+        </form>
+      </search>
+    </div>
+  </div>
+
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-quarter">
+        <section role="region" aria-label="Search Filters">
+          <form class="hmpps-side-filter" method="GET">
+            {{ hiddenInputs(query | getQueryEntries(['history'])) }}
+            <h2 class="hmpps-side-filter__header">Filter</h2>
+
+            {{ govukButton({
+              text: "Apply filters",
+              preventDoubleClick: true
+            }) }}
+
+            <div class="hmpps-side-filter__content">
+              {{ mojDatePicker({
+                id: "start",
+                name: "start",
+                label: {
+                  text: 'Date from'
+                },
+                hint: { text: 'For example, 17/5/2024.' },
+                value: start,
+                errorMessage: validationErrors | findError('start'),
+                classes: 'hmpps-datepicker--fixed-width'
+              }) }}
+
+              {{ mojDatePicker({
+                id: "end",
+                name: "end",
+                label: {
+                  text: 'Date to'
+                },
+                hint: { text: 'For example, 17/5/2024.' },
+                value: end,
+                errorMessage: validationErrors | findError('end'),
+                classes: 'hmpps-datepicker--fixed-width'
+              }) }}
+
+              {{ govukCheckboxes({
+                id: "status",
+                name: "status",
+                fieldset: {
+                  legend: {
+                    text: "Status",
+                    classes: "govuk-fieldset__legend--m"
+                  }
+                },
+                classes: "govuk-checkboxes--small",
+                errorMessage: validationErrors | findError('status'),
+                items: [
+                  {
+                    value: 'PENDING',
+                    text: "Awaiting details"
+                  },
+                  {
+                    value: 'UNVERIFIED',
+                    text: "Unverified"
+                  },
+                  {
+                    value: 'VERIFIED',
+                    text: "Verified"
+                  }
+                ] | setCheckedValue(status or '')
+              }) }}
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="govuk-grid-column-three-quarters">
+        {% if hasValidationError %}
+          <p class="govuk-!-margin-bottom-6"><strong>Enter a valid filter to search and view releases.</strong></p>
+        {% elseif not results.length %}
+          <p class="govuk-!-margin-bottom-6"><strong>No releases match your search.</strong></p>
+        {% else %}
+          {{ simplePagination(paginationParams) }}
+
+          {% set rows = [] %}
+          {% for result in results %}
+            {% set rows = (rows.push(
+              {
+                title: { text: result.person | firstNameSpaceLastName + ' - ' + result.person.identifier },
+                action: { text: 'View', href: '/releases/' + result.id },
+                data: [
+                result.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data',
+                result.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data',
+                result.confirmedReleaseDate | formatDate("d MMMM yyyy") or 'No data',
+                { html: statusTag(result, 'float-right shift-right-20') }
+              ]
+              }
+            ), rows) %}
+          {% endfor %}
+
+          {{ cardTable({
+            columns: [
+              [
+                { text: 'Auto date', width: 25 },
+                { text: 'Approved date', width: 25 },
+                { text: 'Confirmed date', width: 25 },
+                { text: '', width: 25 }
+              ]
+            ],
+            rows: rows
+          }) }}
+
+          {{ simplePagination(paginationParams) }}
+        {% endif %}
       </div>
     </div>
   </div>

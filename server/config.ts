@@ -103,6 +103,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 20000))),
     },
+    releaseSchedulerApi: {
+      url: get('RELEASE_SCHEDULER_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('RELEASE_SCHEDULER_API_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('RELEASE_SCHEDULER_API_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('RELEASE_SCHEDULER_API_TIMEOUT_RESPONSE', 5000))),
+    },
   },
   sentry: {
     dsn: process.env['SENTRY_DSN'],

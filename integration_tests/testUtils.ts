@@ -8,7 +8,7 @@ export { resetStubs }
 const DEFAULT_ROLES = ['ROLE_RELEASE_SCHEDULER_RW']
 
 export const attemptHmppsAuthLogin = async (page: Page) => {
-  await page.goto('/')
+  await page.goto('/?start=9%2F11%2F2026')
   page.locator('h1', { hasText: 'Sign in' })
   const url = await hmppsAuth.getSignInUrl()
   return page.goto(url)

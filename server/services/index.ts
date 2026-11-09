@@ -11,6 +11,7 @@ import logger from '../../logger'
 import PrisonerSearchApiService from './apis/prisonerSearchService'
 import PrisonApiService from './apis/prisonApiService'
 import { populatePrisonerDetails } from '../middleware/permissions/populatePrisonerDetails'
+import ReleaseSchedulerService from './apis/releaseSchedulerService'
 
 export const services = () => {
   const { applicationInfo, hmppsAuditClient, hmppsAuthClient } = dataAccess()
@@ -33,6 +34,7 @@ export const services = () => {
     applicationInfo,
     auditService: new AuditService(hmppsAuditClient),
     prisonApiService: new PrisonApiService(hmppsAuthClient, prisonerSearchService),
+    releaseSchedulerService: new ReleaseSchedulerService(hmppsAuthClient),
     prisonerSearchService,
     cacheStore,
     populatePrisonerMiddleware: populatePrisonerDetails(prisonPermissionsService),

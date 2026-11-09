@@ -5,7 +5,6 @@ import MojFilter from '@ministryofjustice/frontend/moj/filters/all'
 import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
-import { formatDate } from 'date-fns'
 import {
   addSelectValue,
   fromCodedDescription,
@@ -18,7 +17,7 @@ import {
 import config from '../config'
 import logger from '../../logger'
 import { historyExtension } from '../middleware/history/historyExtension'
-import { formatFromInputDate, inputDate } from './dateTimeUtils'
+import { formatFromInputDate, inputDate, formatDate } from './dateTimeUtils'
 import {
   firstNameSpaceLastName,
   formatRefDataName,

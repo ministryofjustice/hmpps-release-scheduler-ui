@@ -1,0 +1,13 @@
+{% macro statusTag(entity, classes) %}
+  {% set status = entity.status %}
+  {% switch status.code %}
+  {% case 'PENDING' %}
+    {% set colour = " govuk-tag--grey" %}
+  {% case 'UNVERIFIED' %}
+    {% set colour = " govuk-tag--yellow" %}
+  {% default %}
+    {% set colour = '' %}
+  {% endswitch %}
+
+  <strong class='govuk-tag{{ colour }} {{ classes or '' }}'>{{ status.description }}</strong>
+{% endmacro %}

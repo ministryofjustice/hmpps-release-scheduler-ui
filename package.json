@@ -23,7 +23,8 @@
     "int-test-init:ci": "npx playwright install",
     "clean": "rm -rf dist test_results",
     "rebuild": "npm run clean && npm run setup && npm run build",
-    "setup": "npm ci"
+    "setup": "npm ci",
+    "swagger": "npx openapi-typescript https://release-scheduler-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > ./server/@types/releaseSchedulerApi/index.d.ts && eslint --fix \"./server/@types/releaseSchedulerApi/index.d.ts\""
   },
   "engines": {
     "node": "^26",

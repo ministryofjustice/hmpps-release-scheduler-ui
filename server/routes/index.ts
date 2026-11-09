@@ -11,6 +11,9 @@ import populateValidationErrors from '../middleware/validation/populateValidatio
 import { FLASH_KEY__SUCCESS_BANNER } from '../utils/constants'
 import insertJourneyIdentifier from '../middleware/journey/insertJourneyIdentifier'
 import { JourneyRoutes } from './journeys/routes'
+import { HomepageSearchReleasesController } from './controller'
+import { validateOnGET } from '../middleware/validation/validationMiddleware'
+import { schema } from './schema'
 
 export default function routes(services: Services): Router {
   const { router, get } = BaseRouter()
@@ -38,11 +41,12 @@ export default function routes(services: Services): Router {
     next()
   })
 
-  get('/', Page.HOMEPAGE, async (_req, res) => {
-    res.render('view', {
-      showBreadcrumbs: true,
-    })
-  })
+  get(
+    '/',
+    Page.HOMEPAGE,
+    validateOnGET(schema, '*'),
+    new HomepageSearchReleasesController(services.releaseSchedulerService).GET,
+  )
 
   router.use(insertJourneyIdentifier())
   router.use('/:journeyId', JourneyRoutes(services))
