@@ -6,6 +6,7 @@ import tokenVerification from '../mockApis/tokenVerification'
 import { resetStubs } from '../testUtils'
 import { stubPrisonApiHealth } from '../mockApis/prisonApi'
 import { stubPrisonerSearchPing } from '../mockApis/prisonerSearchApi'
+import { stubReleaseSchedulerPing } from '../mockApis/releaseSchedulerApi'
 
 // NB: add new mock apis here:
 const mockApis = [hmppsAuth, tokenVerification]
@@ -17,7 +18,12 @@ test.describe('Health', () => {
 
   test.describe('All healthy', () => {
     test.beforeEach(async () => {
-      await Promise.all([...mockApis.map(api => api.stubPing()), stubPrisonApiHealth(), stubPrisonerSearchPing()])
+      await Promise.all([
+        ...mockApis.map(api => api.stubPing()),
+        stubPrisonApiHealth(),
+        stubPrisonerSearchPing(),
+        stubReleaseSchedulerPing(),
+      ])
     })
 
     test('Health check is accessible and status is UP', async ({ page }) => {
@@ -40,7 +46,7 @@ test.describe('Health', () => {
   })
 
   test.describe('Some unhealthy', () => {
-    test('Health check status is down for 3 api', async ({ page }) => {
+    test('Health check status is down for 4 api', async ({ page }) => {
       await Promise.all(mockApis.map(api => (api === tokenVerification ? api.stubPing(500) : api.stubPing())))
 
       const response = await page.request.get('/health')
@@ -55,7 +61,7 @@ test.describe('Health', () => {
           (downCount, api) => (api.status === 'DOWN' ? downCount + 1 : downCount),
           0,
         ),
-      ).toEqual(3)
+      ).toEqual(4)
     })
   })
 })
