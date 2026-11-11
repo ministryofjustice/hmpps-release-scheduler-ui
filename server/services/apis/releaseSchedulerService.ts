@@ -46,4 +46,36 @@ export default class ReleaseSchedulerService {
         .get<components['schemas']['ReferenceDataResponse']>({ path: `/reference-data/${domain}` })
     ).items
   }
+
+  async getRelease(context: ApiRequestContext, releaseId: string) {
+    try {
+      return await this.restClient.withContext(context).get<components['schemas']['ReleaseDetail']>({
+        path: `/releases/${releaseId}`,
+      })
+    } catch (error) {
+      return this.handleGetError(error)
+    }
+  }
+
+  async getReleaseAuditHistory(context: ApiRequestContext, releaseId: string) {
+    try {
+      return await this.restClient.withContext(context).get<components['schemas']['AuditHistory']>({
+        path: `/releases/${releaseId}/history`,
+      })
+    } catch (error) {
+      return this.handleGetError(error)
+    }
+  }
+
+  scheduleRelease(context: ApiRequestContext, releaseId: string, request: components['schemas']['ReleaseActions']) {
+    return this.restClient
+      .withContext(context)
+      .put<components['schemas']['AuditHistory']>({ path: `/releases/${releaseId}`, data: request })
+  }
+
+  private handleGetError = (error: unknown) => {
+    const statusCode = (error as { data?: { status?: number } })?.data?.status
+    if (statusCode && statusCode >= 400 && statusCode <= 499) return null
+    throw error
+  }
 }

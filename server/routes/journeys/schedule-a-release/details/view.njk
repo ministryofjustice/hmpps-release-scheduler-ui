@@ -1,0 +1,112 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% set pageTitle = 'Add release details - Schedule and manage releases' %}
+
+{% block meta %}
+  <meta name="autocompleteElements" content="reason"/>
+{% endblock %}
+
+{% block innerContent %}
+  <div class="govuk-width-container">
+    <span class="govuk-caption-l">Schedule and manage releases</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Add release details</h1>
+
+    <div class="govuk-summary-card govuk-!-padding-5">
+      {{ govukSummaryList({
+        card: {
+          classes: "remove-border",
+          title: {
+            text: "Release dates"
+          }
+        },
+        rows: [
+          {
+            key: { text: "Auto release date" },
+            value: { text:  release.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+          },
+          {
+            key: { text: "Approved  release date" },
+            value: { text: release.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+          }
+        ]
+      }) }}
+
+      {% if release.calculatedDates.length %}
+        <p>Auto release and Approved release dates show a single date based on the prisoner's calculated release dates. </p>
+
+        {% call govukDetails({
+          summaryText: "View calculated release dates"
+        }) %}
+          {% set rows = [] %}
+
+          {% for date in release.calculatedDates %}
+            {% set rows = (rows.push(
+              {
+                key: { text: date.type | releaseDateLabel or date.type },
+                value: { text:  date.date | formatDate("d MMMM yyyy") or 'No data' }
+              }
+            ), rows) %}
+          {% endfor %}
+
+          {{ govukSummaryList({
+            rows: rows
+          }) }}
+        {% endcall %}
+      {% else %}
+        <p>There are no calculated release dates for this prisoner. You can create a release and schedule it.</p>
+      {% endif %}
+
+    </div>
+
+    <form method="post" class="govuk-!-width-three-quarters">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      {{ mojDatePicker({
+        id: "confirmedReleaseDate",
+        name: "confirmedReleaseDate",
+        label: {
+          text: 'What is ' + prisonerDetails | firstNameSpaceLastName | possessiveComma + ' confirmed release date?',
+          classes: "govuk-fieldset__legend--m"
+        },
+        hint: {
+          html: '<p class="govuk-hint">This is the date the prisoner will be physically released from this prison.</p><p class="govuk-hint">For example, 17/5/2024.</p>'
+        },
+        value: confirmedReleaseDate,
+        errorMessage: validationErrors | findError('confirmedReleaseDate'),
+        classes: 'hmpps-datepicker--fixed-width govuk-body',
+        minDate: inputDate()
+      }) }}
+
+      {{ govukSelect({
+        id: "reason",
+        name: "reason",
+        label: { text: "What is " + prisonerDetails | firstNameSpaceLastName | possessiveComma + " release reason?", classes: "govuk-label--m", isPageHeading: false },
+        hint: { text: "Start typing a reason" },
+        items: reasonOptions | fromCodedDescription | addSelectValue('') | setSelectedValue(reason),
+        errorMessage: validationErrors | findError('reason')
+      }) }}
+
+      {{ govukCharacterCount({
+        name: "comments",
+        errorMessage: validationErrors | findError('comments'),
+        maxlength: 250,
+        label: {
+          text: "Add any comments for this release (optional)",
+          classes: "govuk-label--m",
+          isPageHeading: false
+        },
+        value: comments
+      }) }}
+
+      {{ govukButton({
+        text: "Continue",
+        preventDoubleClick: true
+      }) }}
+    </form>
+  </div>
+{% endblock %}

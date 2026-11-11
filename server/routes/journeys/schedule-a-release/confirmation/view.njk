@@ -1,0 +1,55 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = 'Release scheduled' %}
+
+{% block innerContent %}
+  <div class="govuk-width-container">
+    {{ govukPanel({
+      titleText: "Release scheduled for " + prisonerDetails | firstNameSpaceLastName,
+      text: ""
+    }) }}
+
+    {{ result | dump }}
+
+    {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-7",
+      rows: [
+        {
+          key: { text: 'Auto release date' },
+          value: { text:  release.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+        },
+        {
+          key: { text: 'Approved release date' },
+          value: { text:  release.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+        },
+        {
+          key: { text: "Confirmed release date" },
+          value: { text: confirmedReleaseDate | formatDate("d MMMM yyyy") }
+        },
+        {
+          key: { text: "Release reason" },
+          value: { text: reason.description  }
+        },
+        {
+          key: { text: "Comments" },
+          value: { html: (comments or 'Not provided') | escape | nl2br  }
+        }
+      ]
+    }) }}
+
+    <h2 class="govuk-heading-m">What you can do next</h2>
+
+    {{ govukButton({
+      text: "Verify this release",
+      href: '/releases/start-edit/' + release.id + '/verify',
+      preventDoubleClick: true
+    }) }}
+
+    <p class="govuk-body">
+      <a class="govuk-link govuk-link--no-visited-state" href="/">Schedule or manage another release </a>
+    </p>
+  </div>
+{% endblock %}

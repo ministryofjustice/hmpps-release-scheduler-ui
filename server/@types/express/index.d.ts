@@ -2,6 +2,7 @@ import { HmppsUser } from '../../interfaces/hmppsUser'
 import { Prisoner } from '../../services/apis/model/prisoner'
 import { PrisonerDetails, JourneyData } from '../journeys'
 import { Breadcrumbs } from '../../middleware/history/breadcrumbs'
+import { components } from '../releaseSchedulerApi'
 
 export declare module 'express-session' {
   // Declare that the session will potentially contain these additional fields
@@ -26,6 +27,8 @@ export declare global {
 
       middleware?: {
         prisonerData?: Prisoner
+        release?: components['schemas']['ReleaseDetail']
+        auditHistory?: components['schemas']['AuditHistory']
       }
     }
 

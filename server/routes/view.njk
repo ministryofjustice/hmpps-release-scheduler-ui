@@ -139,8 +139,8 @@
           {% for result in results %}
             {% set rows = (rows.push(
               {
-                title: { text: result.person | firstNameSpaceLastName + ' - ' + result.person.identifier },
-                action: { text: 'View', href: '/releases/' + result.id },
+                title: { html: '<a class="govuk-link govuk-link--no-visited-state govuk-!-font-weight-bold" target="_blank" href="' + prisonerProfileUrl + '/prisoner/' + result.person.identifier + '">' + result.person | lastNameCommaFirstName + ' - ' + result.person.identifier + '</a>' },
+                action: { text: 'View', href: '/schedule-a-release/start/' + result.id } if result.status.code === 'PENDING' else { text: 'View', href: '/releases/' + result.id },
                 data: [
                 result.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data',
                 result.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data',

@@ -1,3 +1,5 @@
+import { components } from '../releaseSchedulerApi'
+
 export interface PrisonerDetails {
   prisonerNumber: string
   lastName: string
@@ -11,6 +13,7 @@ export interface PrisonerDetails {
 export type JourneyData = {
   instanceUnixEpoch: number
   prisonerDetails?: PrisonerDetails
+  scheduleRelease?: ScheduleReleaseJourney
   isCheckAnswers?: boolean
   journeyCompleted?: boolean
   b64History?: string | undefined
@@ -22,3 +25,13 @@ export type CodedDescription = {
   description: string
   hintText?: string
 }
+
+type ScheduleReleaseJourney = {
+  backUrl: string
+  release: components['schemas']['ReleaseDetail']
+} & Partial<{
+  confirmedReleaseDate: string
+  reason: CodedDescription
+  comments: string | null
+  result: components['schemas']['AuditHistory']
+}>

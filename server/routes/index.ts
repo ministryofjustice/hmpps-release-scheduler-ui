@@ -14,6 +14,7 @@ import { JourneyRoutes } from './journeys/routes'
 import { HomepageSearchReleasesController } from './controller'
 import { validateOnGET } from '../middleware/validation/validationMiddleware'
 import { schema } from './schema'
+import { ManageReleaseRoutes } from './releases/routes'
 
 export default function routes(services: Services): Router {
   const { router, get } = BaseRouter()
@@ -47,6 +48,8 @@ export default function routes(services: Services): Router {
     validateOnGET(schema, '*'),
     new HomepageSearchReleasesController(services.releaseSchedulerService).GET,
   )
+
+  router.use('/releases', ManageReleaseRoutes(services))
 
   router.use(insertJourneyIdentifier())
   router.use('/:journeyId', JourneyRoutes(services))
