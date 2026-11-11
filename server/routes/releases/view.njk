@@ -1,0 +1,85 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/auditHistory/macro.njk" import auditHistory %}
+{% from "partials/statusTag/macro.njk" import statusTag %}
+
+{% set pageTitle = 'Manage scheduled release - Schedule and manage releases' %}
+
+{% block innerContent %}
+  <div class="govuk-grid-row">
+    <span class="govuk-caption-l">Schedule and manage releases</span>
+    <h1 class="govuk-heading-l">Manage {{ prisonerDetails | firstNameSpaceLastName | possessiveComma }} scheduled release</h1>
+
+    {% set baseEditUrl = "/releases/start-edit/" + release.id %}
+
+    {% if user | hasPermission('MANAGE') %}
+      {{ govukButton({
+        classes: "govuk-button--warning",
+        text: "Unschedule this release",
+        href: baseEditUrl + "/cancel",
+        preventDoubleClick: true
+      }) }}
+    {% endif %}
+
+      {{ govukTabs({
+        items: [
+          {
+            label: "Manage release",
+            id: "view-release",
+            panel: { html: govukSummaryList({
+            card: {
+              classes: "govuk-!-margin-bottom-2",
+              title: {
+                text: "Scheduled release details"
+              }
+            },
+            rows: [
+              {
+                key: { text: 'Auto release date' },
+                value: { text:  release.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+              },
+              {
+                key: { text: 'Approved release date' },
+                value: { text:  release.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+              },
+              {
+                key: { text: "Confirmed release date" },
+                value: { text: release.confirmedReleaseDate | formatDate("d MMMM yyyy") },
+                actions: { items: [{ href: baseEditUrl + '/confirmedReleaseDate', text: "Change", visuallyHiddenText: "confirmed released date", classes: "govuk-link--no-visited-state" }]  }
+              },
+              {
+                key: { text: "Release reason" },
+                value: { text: release.reason.description  },
+                actions: { items: [{ href: baseEditUrl + '/reason', text: "Change", visuallyHiddenText: "release reason", classes: "govuk-link--no-visited-state" }]  }
+              },
+              {
+                key: { text: "Comments" },
+                value: { html: (release.comments or 'Not provided') | escape | nl2br  },
+                actions: { items: [{ href: baseEditUrl + '/comments', text: "Change", visuallyHiddenText: "comments", classes: "govuk-link--no-visited-state" }]  }
+              },
+              {
+                key: { text: 'Status' },
+                value: { html: statusTag(release) }
+              }
+            ] | removeNullish | showChangeLinksIf(user | hasPermission('MANAGE'))
+          }) }
+          },
+          {
+            label: "Release history",
+            id: "release-history",
+            panel: { html: auditHistory({ actions: auditedActions, prisonerName: prisonerDetails | firstNameSpaceLastName }) }
+          }
+        ]
+      }) }}
+    </div>
+
+  {% if release.status.code === 'UNVERIFIED' and user | hasPermission('MANAGE') %}
+    {{ govukButton({
+      text: "Verify release",
+      href: baseEditUrl + "/verify",
+      preventDoubleClick: true
+    }) }}
+  {% endif %}
+{% endblock %}

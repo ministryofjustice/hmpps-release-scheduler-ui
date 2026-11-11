@@ -48,7 +48,6 @@ export default function journeyStateGuard(rules: JourneyStateGuard) {
     const { journeyData } = req
 
     // All journeys need journeyData to be populated with prisoner data
-
     if (!res.locals.prisonerDetails) {
       // The relevant /start for this journey has not been visited
       recordJourneyGuardFailedEvent(res, 'PRISONER_MISSING', flow, requestedPage, '/')

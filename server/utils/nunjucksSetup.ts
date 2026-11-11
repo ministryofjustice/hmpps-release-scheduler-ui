@@ -117,4 +117,21 @@ export default function nunjucksSetup(app: express.Express): void {
   )
 
   njkEnv.addFilter('isArray', Array.isArray)
+
+  njkEnv.addFilter(
+    'releaseDateLabel',
+    (code: string) =>
+      ({
+        CRD: 'Conditional Release Date',
+        ARD: 'Automatic Release Date',
+        NPD: 'Non-Parole Date',
+        PRRD: 'Post Recall Release Date',
+        MTD: 'Mid Transfer Date',
+        DPRRD: 'Detention and Training Order Post Recall Release Date',
+        HDCAD: 'Home Detention Curfew Approved Date',
+        APD: 'Approved Parole Date',
+        LTD: 'Late Transfer Date',
+        ETD: 'Earliest Transfer Date',
+      })[code],
+  )
 }

@@ -36,6 +36,10 @@ const DOMAIN_EVENT_MAP: { [key: string]: DomainEventText } = {
     content: 'Release migrated from NOMIS',
     skipUser: true,
   },
+  'person.release.scheduled': {
+    heading: 'Scheduled',
+    content: 'Release scheduled for <prisoner>',
+  },
 }
 
 const CHANGE_PROPERTY_MAP: { [key: string]: string } = {
@@ -48,18 +52,8 @@ const CHANGE_PROPERTY_MAP: { [key: string]: string } = {
   requestedOn: 'Request date',
 }
 
-const parseChangedPropertyValue = (domain: string, property: string, value: unknown, referenceData: ReferenceData) => {
+const parseChangedPropertyValue = (domain: string, property: string, value: unknown, _referenceData: ReferenceData) => {
   if (!value) return 'Not applicable'
-
-  if (property === 'prisonCode' || property === 'destinationCode') {
-    const prison = referenceData.prisons.find(({ code }) => code === value)
-    if (prison) return `“${prison.description}”`
-    return `unknown prison code “${value}”`
-  }
-
-  if (property === 'requestedOn') {
-    return formatDate(String(value), `d MMMM yyyy`)
-  }
 
   if (domain.endsWith('comments-changed') && property === 'comments') return `“${value}”`
 

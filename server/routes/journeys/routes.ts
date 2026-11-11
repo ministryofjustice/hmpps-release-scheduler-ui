@@ -2,6 +2,9 @@ import { Router } from 'express'
 import { Services } from '../../services'
 import setUpJourneyData from '../../middleware/journey/setUpJourneyData'
 import { mergeObjects } from '../../utils/utils'
+import { ScheduleReleaseRoutes } from './schedule-a-release/routes'
+import { requirePermissions } from '../../middleware/permissions/requirePermissions'
+import { UserPermissionLevel } from '../../interfaces/hmppsUser'
 
 export const JourneyRoutes = (services: Services) => {
   const router = Router({ mergeParams: true })
@@ -23,6 +26,8 @@ export const JourneyRoutes = (services: Services) => {
       res.sendStatus(200)
     })
   }
+
+  router.use('/schedule-a-release', requirePermissions(UserPermissionLevel.MANAGE), ScheduleReleaseRoutes(services))
 
   return router
 }

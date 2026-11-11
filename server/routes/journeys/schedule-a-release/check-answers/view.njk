@@ -1,0 +1,63 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% set pageTitle = 'Check release details - Schedule and manage releases' %}
+
+{% block innerContent %}
+  <div class="govuk-width-container">
+    <span class="govuk-caption-l">Schedule and manage releases</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Check release details</h1>
+
+    {% set rows = [
+
+    ] | reverse %}
+
+    {% for date in release.calculatedDates | reverse %}
+      {% set rows = (rows.push(
+        {
+          key: { text: date.type | releaseDateLabel or date.type },
+          value: { text:  date.date | formatDate("d MMMM yyyy") or 'No data' }
+        }
+      ), rows) %}
+    {% endfor %}
+
+
+    {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-7",
+      rows: [
+        {
+          key: { text: 'Auto release date' },
+          value: { text:  release.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+        },
+        {
+          key: { text: 'Approved release date' },
+          value: { text:  release.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+        },
+        {
+          key: { text: "Confirmed release date" },
+          value: { text: confirmedReleaseDate | formatDate("d MMMM yyyy") },
+          actions: { items: [{ href: 'details#confirmedReleaseDate', text: "Change", visuallyHiddenText: "confirmed released date", classes: "govuk-link--no-visited-state" }]  }
+        },
+        {
+          key: { text: "Release reason" },
+          value: { text: reason.description  },
+          actions: { items: [{ href: 'details#reason', text: "Change", visuallyHiddenText: "release reason", classes: "govuk-link--no-visited-state" }]  }
+        },
+        {
+          key: { text: "Comments" },
+          value: { html: (comments or 'Not provided') | escape | nl2br  },
+          actions: { items: [{ href: 'details#comments', text: "Change", visuallyHiddenText: "comments", classes: "govuk-link--no-visited-state" }]  }
+        }
+      ]
+    }) }}
+
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      {{ govukButton({
+        text: "Schedule release",
+        preventDoubleClick: true
+      }) }}
+    </form>
+  </div>
+{% endblock %}
