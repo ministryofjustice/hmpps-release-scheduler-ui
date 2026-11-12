@@ -6,13 +6,14 @@ import { ResQuerySchemaType } from './schema'
 import { setPaginationLocals } from '../views/partials/simplePagination/utils'
 import { getApiUserErrorMessage } from '../utils/utils'
 import { formatInputDate } from '../utils/dateTimeUtils'
+import { serialiseHistory } from '../middleware/history/historyMiddleware'
 
 export class HomepageSearchReleasesController {
   constructor(private readonly releaseSchedulerService: ReleaseSchedulerService) {}
 
   private PAGE_SIZE = 50
 
-  GET = async (_req: Request, res: Response) => {
+  GET = async (req: Request, res: Response) => {
     const resQuery = res.locals['query'] as ResQuerySchemaType
 
     if (resQuery.searchTerm?.trim()) {
@@ -74,6 +75,9 @@ export class HomepageSearchReleasesController {
       start: resQuery.validated?.start ? formatInputDate(resQuery.validated.start) : resQuery.start,
       end: resQuery.validated?.end ? formatInputDate(resQuery.validated.end) : resQuery.end,
       status: resQuery.status,
+      query: req.query['history']
+        ? req.query
+        : { ...req.query, history: serialiseHistory(res.locals.history ?? ['/']) },
     })
   }
 }

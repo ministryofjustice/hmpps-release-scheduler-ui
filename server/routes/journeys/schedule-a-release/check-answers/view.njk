@@ -9,20 +9,6 @@
     <span class="govuk-caption-l">Schedule and manage releases</span>
     <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Check release details</h1>
 
-    {% set rows = [
-
-    ] | reverse %}
-
-    {% for date in release.calculatedDates | reverse %}
-      {% set rows = (rows.push(
-        {
-          key: { text: date.type | releaseDateLabel or date.type },
-          value: { text:  date.date | formatDate("d MMMM yyyy") or 'No data' }
-        }
-      ), rows) %}
-    {% endfor %}
-
-
     {{ govukSummaryList({
       classes: "govuk-!-margin-bottom-7",
       rows: [

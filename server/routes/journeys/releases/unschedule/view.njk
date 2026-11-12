@@ -1,0 +1,86 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% set pageTitle = 'Are you sure you want to unschedule this release - Schedule and manage releases' %}
+
+{% block innerContent %}
+  <div class="govuk-width-container">
+    <span class="govuk-caption-l">Schedule and manage releases</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Check release details</h1>
+
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      {{ govukRadios({
+        name: "confirm",
+        errorMessage: validationErrors | findError('confirm'),
+        fieldset: {
+          legend: {
+            text: 'Are you sure you want to unschedule this release?',
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--xl"
+          }
+        },
+        hint: { html: govukWarningText({
+          text: "This will return the release to an unscheduled status. You will need to add a confirmed date and release reason to reschedule this release.",
+          iconFallbackText: "Warning"
+        }) },
+        items: [
+          {
+            value: 'YES',
+            text: "Yes",
+            attributes: { 'aria-controls': 'additional-inputs' }
+          },
+          {
+            value: 'NO',
+            text: "No"
+          }
+        ] | setCheckedValue(confirm)
+      }) }}
+
+      <div id="additional-inputs">
+        {{ govukTextarea({
+          id: "reason",
+          name: "reason",
+          errorMessage: validationErrors | findError('reason'),
+          label: {
+            text: "Enter any comments (optional)",
+            classes: "govuk-label--m",
+            isPageHeading: false
+          },
+          value: reason
+        }) }}
+      </div>
+
+      {{ govukButton({
+        text: "Continue",
+        preventDoubleClick: true
+      }) }}
+    </form>
+  </div>
+{% endblock %}
+
+{% block pageScripts %}
+<script nonce="{{ cspNonce }}">
+  window.onload = function () {
+    const confirmInputs = Array.from(document.querySelectorAll('input[name=confirm]'))
+
+    const toggleAdditionalInputs = () => {
+      if (confirmInputs[0].checked) {
+        document.getElementById('additional-inputs').classList.remove('govuk-!-display-none')
+        confirmInputs[0].setAttribute('aria-expanded', true)
+      } else {
+        document.getElementById('additional-inputs').classList.add('govuk-!-display-none')
+        confirmInputs[0].setAttribute('aria-expanded', false)
+      }
+    }
+
+    confirmInputs[0].addEventListener('change', toggleAdditionalInputs)
+    confirmInputs[1].addEventListener('change', toggleAdditionalInputs)
+
+    toggleAdditionalInputs()
+  }
+</script>
+{% endblock %}

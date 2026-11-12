@@ -32,35 +32,45 @@ type ReferenceData = { prisons: CodedDescription[] }
 
 const DOMAIN_EVENT_MAP: { [key: string]: DomainEventText } = {
   'person.release.migrated': {
-    heading: 'Migrated',
+    heading: 'Release migrated',
     content: 'Release migrated from NOMIS',
     skipUser: true,
   },
   'person.release.scheduled': {
-    heading: 'Scheduled',
+    heading: 'Release scheduled',
     content: 'Release scheduled for <prisoner>',
+  },
+  'person.release.unverified': {
+    heading: 'Release updated',
+  },
+  'person.release.verified': {
+    heading: 'Release verified',
+    content: 'Release verified for <prisoner>',
+  },
+  'person.release.unscheduled': {
+    heading: 'Release unscheduled',
+    content: 'Release unscheduled for <prisoner>',
+    reasonRequested: true,
   },
 }
 
 const CHANGE_PROPERTY_MAP: { [key: string]: string } = {
-  start: 'Start date and time',
-  reason: 'Reason',
+  confirmedReleaseDate: 'Confirmed release date',
+  reason: 'Release reason',
   comments: 'Comments',
-  destinationCode: 'Destination',
-  logistics: 'Escort details',
-  priority: 'Priority',
-  requestedOn: 'Request date',
 }
 
-const parseChangedPropertyValue = (domain: string, property: string, value: unknown, _referenceData: ReferenceData) => {
+const parseChangedPropertyValue = (
+  _domain: string,
+  property: string,
+  value: unknown,
+  _referenceData: ReferenceData,
+) => {
   if (!value) return 'Not applicable'
 
-  if (domain.endsWith('comments-changed') && property === 'comments') return `“${value}”`
+  if (property === 'comments') return `“${value}”`
 
-  if (domain.endsWith('date-range-changed') && ['start', 'end'].includes(property)) return formatDate(String(value))
-
-  if (domain.endsWith('rescheduled') && ['start', 'end'].includes(property))
-    return formatDate(String(value), `d MMMM yyyy 'at' HH:mm`)
+  if (property === 'confirmedReleaseDate') return formatDate(String(value))
 
   return String(value)
 }

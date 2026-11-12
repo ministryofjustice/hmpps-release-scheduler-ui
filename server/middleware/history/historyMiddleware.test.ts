@@ -60,7 +60,7 @@ describe('historyMiddleware', () => {
     middleware(req, res, next)
 
     expect(res.redirect).toHaveBeenCalledWith(
-      `/key-worker/allocate?history=${historyToBase64(['/key-worker', '/key-worker/allocate'], true)}`,
+      `/key-worker/allocate?history=${historyToBase64(['/', '/key-worker', '/key-worker/allocate'], true)}`,
     )
   })
 

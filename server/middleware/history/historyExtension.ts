@@ -35,7 +35,8 @@ export const historyExtension: Extension & {
           match[1]?.startsWith('mailto:') ||
           match[1]?.startsWith('#') ||
           match[1]?.includes('?history=') ||
-          match[1]?.includes('&history=')
+          match[1]?.includes('&history=') ||
+          match[1]?.includes('&amp;history=')
         ) {
           newBody.push(match[0])
         } else if (match[1]?.includes('#')) {

@@ -106,7 +106,7 @@ export function historyMiddleware(
 
       res.locals.history = history
 
-      searchParams.set('history', serialiseHistory(history))
+      searchParams.set('history', serialiseHistory(['/', ...history]))
       const str = searchParams.toString()
 
       if (req.originalUrl.split('?')[0]!.length < 2) {

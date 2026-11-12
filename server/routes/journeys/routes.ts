@@ -5,6 +5,7 @@ import { mergeObjects } from '../../utils/utils'
 import { ScheduleReleaseRoutes } from './schedule-a-release/routes'
 import { requirePermissions } from '../../middleware/permissions/requirePermissions'
 import { UserPermissionLevel } from '../../interfaces/hmppsUser'
+import { UpdateReleaseRoutes } from './releases/routes'
 
 export const JourneyRoutes = (services: Services) => {
   const router = Router({ mergeParams: true })
@@ -28,6 +29,7 @@ export const JourneyRoutes = (services: Services) => {
   }
 
   router.use('/schedule-a-release', requirePermissions(UserPermissionLevel.MANAGE), ScheduleReleaseRoutes(services))
+  router.use('/releases', requirePermissions(UserPermissionLevel.MANAGE), UpdateReleaseRoutes(services))
 
   return router
 }

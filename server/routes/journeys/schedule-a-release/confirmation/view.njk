@@ -2,6 +2,7 @@
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/statusTag/macro.njk" import statusTag %}
 
 {% set pageTitle = 'Release scheduled' %}
 
@@ -11,8 +12,6 @@
       titleText: "Release scheduled for " + prisonerDetails | firstNameSpaceLastName,
       text: ""
     }) }}
-
-    {{ result | dump }}
 
     {{ govukSummaryList({
       classes: "govuk-!-margin-bottom-7",
@@ -27,15 +26,19 @@
         },
         {
           key: { text: "Confirmed release date" },
-          value: { text: confirmedReleaseDate | formatDate("d MMMM yyyy") }
+          value: { text: release.confirmedReleaseDate | formatDate("d MMMM yyyy") }
         },
         {
           key: { text: "Release reason" },
-          value: { text: reason.description  }
+          value: { text: release.reason.description  }
         },
         {
           key: { text: "Comments" },
-          value: { html: (comments or 'Not provided') | escape | nl2br  }
+          value: { html: (release.comments or 'Not provided') | escape | nl2br  }
+        },
+        {
+          key: { text: 'Status' },
+          value: { html: statusTag(release) }
         }
       ]
     }) }}
@@ -49,7 +52,7 @@
     }) }}
 
     <p class="govuk-body">
-      <a class="govuk-link govuk-link--no-visited-state" href="/">Schedule or manage another release </a>
+      <a class="govuk-link govuk-link--no-visited-state" href="{{ homepageUrl }}">Schedule or manage another release </a>
     </p>
   </div>
 {% endblock %}
