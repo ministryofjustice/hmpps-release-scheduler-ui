@@ -16,7 +16,6 @@ export const ScheduleReleaseRoutes = (services: Services) => {
   get('/start/:id', services.populateReleaseMiddleware({ withHistory: false }), (req, res) => {
     if (req.middleware?.release) {
       req.journeyData.prisonerDetails = toPrisonerDetails(req.middleware.prisonerData)
-
       const lastLandmark = res.locals.breadcrumbs.last()
 
       req.journeyData.scheduleRelease = {

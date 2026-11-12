@@ -14,6 +14,7 @@ export type JourneyData = {
   instanceUnixEpoch: number
   prisonerDetails?: PrisonerDetails
   scheduleRelease?: ScheduleReleaseJourney
+  updateRelease?: UpdateReleaseJourney
   isCheckAnswers?: boolean
   journeyCompleted?: boolean
   b64History?: string | undefined
@@ -33,5 +34,18 @@ type ScheduleReleaseJourney = {
   confirmedReleaseDate: string
   reason: CodedDescription
   comments: string | null
-  result: components['schemas']['AuditHistory']
+  result: components['schemas']['ReleaseDetail']
+}>
+
+type UpdateReleaseJourney = {
+  backUrl: string
+  release: components['schemas']['ReleaseDetail']
+  historyQuery: string
+} & Partial<{
+  confirmedReleaseDate: string
+  reason: CodedDescription
+  comments: string | null
+  unscheduleReason: string | null
+  result: components['schemas']['ReleaseDetail']
+  updateType: 'details' | 'unschedule' | 'verify'
 }>

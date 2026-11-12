@@ -67,10 +67,12 @@ export default class ReleaseSchedulerService {
     }
   }
 
-  scheduleRelease(context: ApiRequestContext, releaseId: string, request: components['schemas']['ReleaseActions']) {
-    return this.restClient
+  async putRelease(context: ApiRequestContext, releaseId: string, request: components['schemas']['ReleaseActions']) {
+    await this.restClient
       .withContext(context)
       .put<components['schemas']['AuditHistory']>({ path: `/releases/${releaseId}`, data: request })
+
+    return this.getRelease(context, releaseId)
   }
 
   private handleGetError = (error: unknown) => {

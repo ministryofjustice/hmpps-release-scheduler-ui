@@ -1,0 +1,73 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% set pageTitle = 'Check release details - Schedule and manage releases' %}
+
+{% block innerContent %}
+  <div class="govuk-width-container">
+    <span class="govuk-caption-l">Schedule and manage releases</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Check release details</h1>
+
+    {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-7",
+      rows: [
+        {
+          key: { text: 'Auto release date' },
+          value: { text:  release.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+        },
+        {
+          key: { text: 'Approved release date' },
+          value: { text:  release.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+        },
+        {
+          key: { text: "Confirmed release date" },
+          value: { text: release.confirmedReleaseDate | formatDate("d MMMM yyyy") }
+        },
+        {
+          key: { text: "Release reason" },
+          value: { text: release.reason.description  }
+        },
+        {
+          key: { text: "Comments" },
+          value: { html: (release.comments or 'Not provided') | escape | nl2br  }
+        }
+      ]
+    }) }}
+
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+      {{ govukCheckboxes({
+        name: "verify",
+        classes: "govuk-checkboxes--small",
+        items: [
+          {
+            value: "VERIFY",
+            text: "Check the box to confirm details are correct and this release can be verified."
+          }
+        ]
+      }) }}
+
+      {{ govukButton({
+        id: 'verify',
+        text: "Verify release",
+        preventDoubleClick: true
+      }) }}
+    </form>
+  </div>
+{% endblock %}
+
+{% block pageScripts %}
+<script nonce="{{ cspNonce }}">
+  window.onload = function () {
+    const checkbox = document.querySelector('input[name^=verify]')
+    const submitButton = document.querySelector('button[id^=verify]')
+
+    const checkboxToggleHandler = () => { submitButton.disabled = !checkbox.checked }
+
+    checkbox.addEventListener('input', checkboxToggleHandler)
+    checkboxToggleHandler()
+  }
+</script>
+{% endblock %}

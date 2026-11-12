@@ -1,0 +1,69 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/statusTag/macro.njk" import statusTag %}
+
+  {% switch updateType %}
+  {% case 'details' %}
+    {% set pageTitle = "Release updated" %}
+  {% case 'unschedule' %}
+    {% set pageTitle = "Release unscheduled" %}
+  {% case 'verify' %}
+    {% set pageTitle = "Release verified" %}
+  {% endswitch %}
+
+{% block innerContent %}
+  <div class="govuk-width-container">
+    {{ govukPanel({
+      titleText: pageTitle + " " + prisonerDetails | firstNameSpaceLastName,
+      text: ""
+    }) }}
+
+    {% if updateType !== 'unschedule' %}
+      {{ govukSummaryList({
+        classes: "govuk-!-margin-bottom-7",
+        rows: [
+          {
+            key: { text: 'Auto release date' },
+            value: { text:  release.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+          },
+          {
+            key: { text: 'Approved release date' },
+            value: { text:  release.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data' }
+          },
+          {
+            key: { text: "Confirmed release date" },
+            value: { text: release.confirmedReleaseDate | formatDate("d MMMM yyyy") }
+          },
+          {
+            key: { text: "Release reason" },
+            value: { text: release.reason.description  }
+          },
+          {
+            key: { text: "Comments" },
+            value: { html: (release.comments or 'Not provided') | escape | nl2br  }
+          },
+          {
+            key: { text: 'Status' },
+            value: { html: statusTag(release) }
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <h2 class="govuk-heading-m">What you can do next</h2>
+
+    {% if release.status.code === 'UNVERIFIED' %}
+      {{ govukButton({
+        text: "Verify this release",
+        href: '/releases/start-edit/' + release.id + '/verify',
+        preventDoubleClick: true
+      }) }}
+    {% endif %}
+
+    <p class="govuk-body">
+      <a class="govuk-link govuk-link--no-visited-state" href="/">Schedule or manage another release </a>
+    </p>
+  </div>
+{% endblock %}
