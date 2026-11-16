@@ -47,6 +47,8 @@ function AutoComplete(meta) {
     // We want to use type="search" to enable the clear button (cross) on these inputs
     selectElement.setAttribute('type', 'search')
 
+    selectElement.setAttribute('aria-describedby', `${el}__assistiveHint ${el}-error ${el}-hint`)
+
     // There is a bug(?) where the scroll bar of a child element will trigger a "blur" event when it has a parent with a
     // tabindex of -1. Because dialogs typically use tabindex=-1 to recieve programmatic focus, and this autocomplete
     // component uses blur events to close the autocomplete menu, it means the autocomplete will close when using the
