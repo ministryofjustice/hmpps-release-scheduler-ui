@@ -22,6 +22,15 @@ export const schema = createSchema({
       if (!Number.isNaN(num)) return num
       return 1
     }),
+  size: z
+    .enum(['10', '25', '50', '100'])
+    .optional()
+    .transform(val => {
+      if (!val) return 50
+      const num = Number(val)
+      if (!Number.isNaN(num)) return num
+      return 50
+    }),
 }).transform(({ start, end, ...otherProps }, ctx) => {
   if (otherProps.searchTerm) {
     return {

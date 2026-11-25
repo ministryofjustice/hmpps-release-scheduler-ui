@@ -11,8 +11,6 @@ import { serialiseHistory } from '../middleware/history/historyMiddleware'
 export class HomepageSearchReleasesController {
   constructor(private readonly releaseSchedulerService: ReleaseSchedulerService) {}
 
-  private PAGE_SIZE = 50
-
   GET = async (req: Request, res: Response) => {
     const resQuery = res.locals['query'] as ResQuerySchemaType
 
@@ -27,7 +25,7 @@ export class HomepageSearchReleasesController {
       if (resQuery.validated) {
         const requestBody: components['schemas']['ReleaseSearchRequest'] = {
           page: resQuery.validated.page || 1,
-          size: this.PAGE_SIZE,
+          size: resQuery.validated.size ?? 50,
           statusCodes: ['PENDING', 'UNVERIFIED', 'VERIFIED'],
         }
         if (resQuery.validated.searchTerm) {
@@ -47,11 +45,12 @@ export class HomepageSearchReleasesController {
 
       setPaginationLocals(
         res,
-        this.PAGE_SIZE,
+        resQuery?.validated?.size ?? 50,
         resQuery?.validated?.page ?? 1,
         searchResponse?.metadata?.totalElements ?? 0,
         results.length,
         `?page={page}&${[
+          `size=${resQuery?.validated?.size ?? 50}`,
           `searchTerm=${resQuery?.searchTerm ?? ''}`,
           `start=${resQuery?.start ?? ''}`,
           `end=${resQuery?.end ?? ''}`,
@@ -78,6 +77,7 @@ export class HomepageSearchReleasesController {
       query: req.query['history']
         ? req.query
         : { ...req.query, history: serialiseHistory(res.locals.history ?? ['/']) },
+      size: resQuery?.validated?.size ?? 50,
     })
   }
 }

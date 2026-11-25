@@ -13,7 +13,10 @@
 
 {% set fullScreen = true %}
 {% set fullWidth = true %}
-{% set pageTitle = 'Search for releases - Schedule and manage releases' %}
+
+{% set caption = 'Schedule and manage releases' if user | hasPermission('MANAGE') else 'View release schedules' %}
+
+{% set pageTitle = 'Search for releases - ' + caption %}
 
 {% if not hasValidationError %}
   {% set searchResultCount = paginationParams.totalRows %}
@@ -23,7 +26,7 @@
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <span class="govuk-caption-l">Schedule and manage releases</span>
+        <span class="govuk-caption-l">{{ caption }}</span>
         <h1 class="govuk-heading-l">Search for releases</h1>
 
         <p>Search for an individual prisoner’s release, or filter upcoming releases by date and release status. To search for a prisoner, clear the date range first.</p>
@@ -65,12 +68,6 @@
           <form class="hmpps-side-filter" method="GET">
             {{ hiddenInputs(query | getQueryEntries(['history'])) }}
             <h2 class="hmpps-side-filter__header">Filter</h2>
-
-            {{ govukButton({
-              text: "Apply filters",
-              preventDoubleClick: true
-            }) }}
-
             <div class="hmpps-side-filter__content">
               {{ mojDatePicker({
                 id: "start",
@@ -123,6 +120,10 @@
                 ] | setCheckedValue(status or '')
               }) }}
             </div>
+            {{ govukButton({
+              text: "Apply filters",
+              preventDoubleClick: true
+            }) }}
           </form>
         </section>
       </div>
@@ -133,6 +134,22 @@
         {% elseif not results.length %}
           <p class="govuk-!-margin-bottom-6"><strong>No releases match your search.</strong></p>
         {% else %}
+          <div class="govuk-!-display-none-print govuk-!-margin-bottom-5">
+            <form id="sizeForm">
+              {{ hiddenInputs(query | getQueryEntries(['searchTerm','start','end','status','history'])) }}
+              <label class="govuk-label" for="size">Show results</label>
+              <select class="govuk-select hmpps-sort-selector__select" id="size" name="size" value="{{ size }}">
+                <option value="10" {{ 'selected' if size == '10' }}>10 per page</option>
+                <option value="25" {{ 'selected' if size == '25' }}>25 per page</option>
+                <option value="50" {{ 'selected' if size == '50' }}>50 per page</option>
+                <option value="100" {{ 'selected' if size == '100' }}>100 per page</option>
+              </select>
+              <button type="submit" data-prevent-double-click="true" class="govuk-button hmpps-sort-selector__sort-button">
+                Reload
+              </button>
+            </form>
+          </div>
+
           {{ simplePagination(paginationParams) }}
 
           {% set rows = [] %}
@@ -140,7 +157,7 @@
             {% set rows = (rows.push(
               {
                 title: { html: '<a class="govuk-link govuk-link--no-visited-state govuk-!-font-weight-bold" href="' + prisonerProfileBacklink(originalUrl, result.person.identifier) + '">' + result.person | lastNameCommaFirstName + ' - ' + result.person.identifier + '</a>' },
-                action: { text: 'View', href: '/schedule-a-release/start/' + result.id } if result.status.code === 'PENDING' else { text: 'View', href: '/releases/' + result.id },
+                action: { html: 'View <span class="govuk-visually-hidden"> release for ' + result.person | lastNameCommaFirstName + '</span>', href: ('/schedule-a-release/start/' + result.id) if result.status.code === 'PENDING' else ('/releases/' + result.id)} if result.status.code !== 'PENDING' or user | hasPermission('MANAGE') else null,
                 data: [
                 result.autoReleaseDate | formatDate("d MMMM yyyy") or 'No data',
                 result.approvedReleaseDate | formatDate("d MMMM yyyy") or 'No data',
