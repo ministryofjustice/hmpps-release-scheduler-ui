@@ -5,12 +5,14 @@
 {% from "partials/auditHistory/macro.njk" import auditHistory %}
 {% from "partials/statusTag/macro.njk" import statusTag %}
 
-{% set pageTitle = 'Manage scheduled release - Schedule and manage releases' %}
+{% set caption = 'Schedule and manage releases' if user | hasPermission('MANAGE') else 'View release schedules' %}
+{% set headingPrefix = 'Manage' if user | hasPermission('MANAGE') else 'View' %}
+{% set pageTitle = headingPrefix + ' scheduled release - ' + caption %}
 
 {% block innerContent %}
   <div class="govuk-grid-row">
-    <span class="govuk-caption-l">Schedule and manage releases</span>
-    <h1 class="govuk-heading-l">Manage {{ prisonerDetails | firstNameSpaceLastName | possessiveComma }} scheduled release</h1>
+    <span class="govuk-caption-l">{{ caption }}</span>
+    <h1 class="govuk-heading-l">{{ headingPrefix }} {{ prisonerDetails | firstNameSpaceLastName | possessiveComma }} scheduled release</h1>
 
     {% set baseEditUrl = "/releases/start-edit/" + release.id %}
 
@@ -26,7 +28,7 @@
       {{ govukTabs({
         items: [
           {
-            label: "Manage release",
+            label: "Manage release" if user | hasPermission('MANAGE') else 'Release details',
             id: "view-release",
             panel: { html: govukSummaryList({
             card: {
