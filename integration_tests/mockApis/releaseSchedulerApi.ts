@@ -29,6 +29,13 @@ export const stubGetRelease = (response: components['schemas']['ReleaseDetail'])
     response,
   })
 
+export const stubGetReleaseHistory = (releaseId: string, response: components['schemas']['AuditHistory']) =>
+  successStub({
+    method: 'GET',
+    urlPattern: `/release-scheduler-api/releases/${releaseId}/history`,
+    response,
+  })
+
 export const stubGetReasons = () =>
   successStub({
     method: 'GET',
