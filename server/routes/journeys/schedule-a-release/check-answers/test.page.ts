@@ -10,16 +10,4 @@ export class ScheduleReleaseCheckAnswersPage extends BaseTestPage {
       backUrl: /details/,
     })
   }
-
-  dateField() {
-    return this.textbox(/What is (.+?)’s confirmed release date\?/)
-  }
-
-  reasonInput() {
-    return this.dropdown(/What is (.+?)’s release reason\?/)
-  }
-
-  commentsField() {
-    return this.textbox('Add any comments for this release (optional)')
-  }
 }

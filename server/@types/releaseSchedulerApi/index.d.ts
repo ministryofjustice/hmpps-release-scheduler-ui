@@ -4,6 +4,46 @@
  */
 
 export interface paths {
+  '/sync/releases/{personIdentifier}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__SYNC__RW
+     */
+    put: operations['syncRelease']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/resync/releases/{personIdentifier}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__SYNC__RW
+     */
+    put: operations['resync']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/releases/{id}': {
     parameters: {
       query?: never
@@ -11,7 +51,15 @@ export interface paths {
       path?: never
       cookie?: never
     }
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__RELEASE_SCHEDULER_UI
+     */
     get: operations['getReleaseDetail']
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__RELEASE_SCHEDULER_UI
+     */
     put: operations['manageReleaseDetail']
     post?: never
     delete?: never
@@ -29,7 +77,31 @@ export interface paths {
     }
     get?: never
     put?: never
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__RELEASE_SCHEDULER_UI
+     */
     post: operations['findPersonReleases']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/sync/releases/{id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__SYNC__RW
+     */
+    get: operations['getRelease']
+    put?: never
+    post?: never
     delete?: never
     options?: never
     head?: never
@@ -43,6 +115,10 @@ export interface paths {
       path?: never
       cookie?: never
     }
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__RELEASE_SCHEDULER_UI
+     */
     get: operations['getReleaseHistory']
     put?: never
     post?: never
@@ -59,7 +135,31 @@ export interface paths {
       path?: never
       cookie?: never
     }
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__RELEASE_SCHEDULER_UI
+     */
     get: operations['getDomain']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/reconciliation/releases/{personIdentifier}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * @description Requires one of the following roles:
+     *                 * ROLE_RELEASES__SYNC__RW
+     */
+    get: operations['reconcile']
     put?: never
     post?: never
     delete?: never
@@ -72,11 +172,73 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    SyncRelease: {
+      /** Format: int64 */
+      legacyBookingId?: number | null
+      /** Format: int32 */
+      legacySequenceNumber?: number | null
+      /** Format: uuid */
+      dpsId?: string | null
+      /** Format: date */
+      releaseDate?: string | null
+      reasonCode?: string | null
+      statusCode?: string | null
+      verified: boolean
+      comments?: string | null
+      /** Format: date */
+      approvedReleaseDate?: string | null
+      /** Format: date */
+      autoReleaseDate?: string | null
+      /** Format: date */
+      dtoApprovedDate?: string | null
+      /** Format: date */
+      dtoMidTermDate?: string | null
+    }
+    SyncReleaseRequest: {
+      /** Format: date-time */
+      occurredAt: string
+      syncUser: components['schemas']['SyncUser']
+      release: components['schemas']['SyncRelease']
+    }
+    SyncUser: {
+      username: string
+      activeCaseloadId?: string | null
+    }
+    ReferenceId: {
+      /** Format: uuid */
+      dpsId: string
+    }
+    AtAndBy: {
+      /** Format: date-time */
+      at: string
+      by: string
+    }
+    ResyncRelease: {
+      release: components['schemas']['SyncRelease']
+      created: components['schemas']['AtAndBy']
+      modified?: components['schemas']['AtAndBy'] | null
+    }
+    ResyncReleasesRequest: {
+      releases: components['schemas']['ResyncRelease'][]
+    }
+    ReleaseMapping: {
+      /** Format: uuid */
+      dpsId: string
+      /** Format: int64 */
+      legacyBookingId: number
+    }
+    ResyncResponse: {
+      releases: components['schemas']['ReleaseMapping'][]
+    }
+    CompleteRelease: {
+      type: 'CompleteRelease'
+    } & Omit<components['schemas']['ReleaseAction'], 'type'>
     ReleaseAction: {
       type: string
     }
     ReleaseActions: {
       actions: (
+        | components['schemas']['CompleteRelease']
         | components['schemas']['ScheduleRelease']
         | components['schemas']['UnscheduleRelease']
         | components['schemas']['UnverifyRelease']
@@ -170,22 +332,27 @@ export interface components {
     }
     ApprovedReleaseDate: {
       category: 'ApprovedReleaseDate'
-    } & (Omit<WithRequired<components['schemas']['ReleaseDateObject'], 'date' | 'type'>, 'category'> & {
+    } & (Omit<WithRequired<components['schemas']['ReleaseDateReleaseDateType'], 'date' | 'type'>, 'category'> & {
       /** @enum {string} */
       type: 'HDCAD' | 'APD' | 'PRRD' | 'LTD' | 'ETD'
     })
+    /** @enum {unknown} */
+    ApprovedReleaseType: 'HDCAD' | 'APD' | 'PRRD' | 'LTD' | 'ETD'
     AutoReleaseDate: {
       category: 'AutoReleaseDate'
-    } & (Omit<WithRequired<components['schemas']['ReleaseDateObject'], 'date' | 'type'>, 'category'> & {
+    } & (Omit<WithRequired<components['schemas']['ReleaseDateReleaseDateType'], 'date' | 'type'>, 'category'> & {
       /** @enum {string} */
       type: 'CRD' | 'ARD' | 'NPD' | 'PRRD' | 'MTD' | 'DPRRD'
     })
-    ReleaseDateObject: {
-      type: unknown
+    /** @enum {unknown} */
+    AutoReleaseType: 'CRD' | 'ARD' | 'NPD' | 'PRRD' | 'MTD' | 'DPRRD'
+    ReleaseDateReleaseDateType: {
+      type: components['schemas']['ApprovedReleaseType'] | components['schemas']['AutoReleaseType']
       /** Format: date */
       date: string
       category: string
     }
+    ReleaseDateType: unknown
     ReleaseDetail: {
       /** Format: uuid */
       id: string
@@ -205,6 +372,12 @@ export interface components {
       domain: components['schemas']['CodedDescription']
       items: components['schemas']['CodedDescription'][]
     }
+    ReconciliationRelease: {
+      release: components['schemas']['SyncRelease']
+    }
+    ReconciliationResponse: {
+      releases: components['schemas']['ReconciliationRelease'][]
+    }
   }
   responses: never
   parameters: never
@@ -214,6 +387,58 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  syncRelease: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        personIdentifier: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SyncReleaseRequest']
+      }
+    }
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['ReferenceId']
+        }
+      }
+    }
+  }
+  resync: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        personIdentifier: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ResyncReleasesRequest']
+      }
+    }
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['ResyncResponse']
+        }
+      }
+    }
+  }
   getReleaseDetail: {
     parameters: {
       query?: never
@@ -294,6 +519,28 @@ export interface operations {
       }
     }
   }
+  getRelease: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['SyncRelease']
+        }
+      }
+    }
+  }
   getReleaseHistory: {
     parameters: {
       query?: never
@@ -338,6 +585,28 @@ export interface operations {
         }
         content: {
           '*/*': components['schemas']['ReferenceDataResponse']
+        }
+      }
+    }
+  }
+  reconcile: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        personIdentifier: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['ReconciliationResponse']
         }
       }
     }

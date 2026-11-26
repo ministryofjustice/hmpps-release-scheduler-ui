@@ -22,6 +22,13 @@ export const populateRelease =
         { res },
         release.person.identifier,
       )
+
+      if (
+        !res.locals.user.caseLoads?.find(caseLoad => caseLoad.caseLoadId === req.middleware?.prisonerData?.prisonId)
+      ) {
+        return res.notAuthorised()
+      }
+
       res.locals.prisonerDetails = req.middleware.prisonerData
 
       return next()

@@ -16,7 +16,7 @@
 {% block innerContent %}
   <div class="govuk-width-container">
     {{ govukPanel({
-      titleText: pageTitle + " " + prisonerDetails | firstNameSpaceLastName,
+      titleText: pageTitle + " for " + prisonerDetails | firstNameSpaceLastName,
       text: ""
     }) }}
 
@@ -63,7 +63,7 @@
     {% endif %}
 
     <p class="govuk-body">
-      <a class="govuk-link govuk-link--no-visited-state" href="/">Schedule or manage another release </a>
+      <a class="govuk-link govuk-link--no-visited-state" href="/">Schedule or manage another release</a>
     </p>
   </div>
 {% endblock %}
