@@ -10,7 +10,7 @@ import { HomePage } from './test.page'
 import { verifyAuditEvents } from '../../integration_tests/steps/verifyAuditEvents'
 
 test.describe('/scheduled-transfers', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async () => {
     await Promise.all([
       auth.stubSignInPage(),
       stubComponents(),
@@ -45,7 +45,6 @@ test.describe('/scheduled-transfers', () => {
         ],
       }),
     ])
-    await login(page)
   })
 
   test.afterEach(async () => {
@@ -53,10 +52,11 @@ test.describe('/scheduled-transfers', () => {
   })
 
   test('should show search transfers page', async ({ page }) => {
+    await login(page)
     await page.goto('?start=01/01/2001&end=31/01/2001&page=2')
 
     // verify page content
-    const testPage = await new HomePage(page).verifyContent()
+    const testPage = await new HomePage(page).verifyContent({ readOnly: false })
 
     await expect(testPage.searchField()).toBeVisible()
     await expect(testPage.searchField()).toHaveValue('')
@@ -115,5 +115,55 @@ test.describe('/scheduled-transfers', () => {
         when: expect.any(String),
       },
     ])
+  })
+
+  test('should show search transfers page for read-only role', async ({ page }) => {
+    await login(page, { roles: ['ROLE_RELEASE_SCHEDULER_RO'] })
+    await page.goto('?start=01/01/2001&end=31/01/2001&page=2')
+
+    // verify page content
+    const testPage = await new HomePage(page).verifyContent({ readOnly: true })
+
+    await expect(testPage.searchField()).toBeVisible()
+    await expect(testPage.searchField()).toHaveValue('')
+    await expect(testPage.startDateField()).toBeVisible()
+    await expect(testPage.startDateField()).toHaveValue('1/1/2001')
+    await expect(testPage.endDateField()).toBeVisible()
+    await expect(testPage.endDateField()).toHaveValue('31/1/2001')
+
+    await expect(testPage.link('Prisoner-Surname, Prisoner-Name - A9965EA').first()).toBeVisible()
+    await expect(page.locator('strong', { hasText: 'Auto date' }).nth(0).locator('..')).toContainText('1 January 2001')
+    await expect(page.locator('strong', { hasText: 'Approved date' }).nth(0).locator('..')).toContainText(
+      '2 January 2001',
+    )
+    await expect(page.locator('strong', { hasText: 'Confirmed date' }).nth(0).locator('..')).toContainText(
+      '3 January 2001',
+    )
+    await expect(testPage.link('View release for Prisoner-Surname, Prisoner-Name')).toHaveAttribute(
+      'href',
+      /\/releases\/release-1/,
+    )
+
+    await expect(testPage.link('Another, Name - A1123EA').first()).toBeVisible()
+    await expect(page.locator('strong', { hasText: 'Auto date' }).nth(1).locator('..')).toContainText('1 January 2001')
+    await expect(page.locator('strong', { hasText: 'Approved date' }).nth(1).locator('..')).toContainText(
+      '2 January 2001',
+    )
+    await expect(page.locator('strong', { hasText: 'Confirmed date' }).nth(1).locator('..')).toContainText('No data')
+    await expect(testPage.link('View release for Another, Name')).toHaveCount(0)
+
+    // verify validation error
+    await testPage.endDateField().fill('2/2/2001')
+    await testPage.clickButton('Apply')
+    await testPage.link('Enter a date range less than 31 days').click()
+    await expect(testPage.endDateField()).toBeFocused()
+    await expect(page.getByText('Enter a valid filter to search and view releases.')).toBeVisible()
+
+    // verify searching by prison number clears date filter
+    await testPage.searchField().fill('test')
+    await testPage.clickButton('Search')
+    await expect(testPage.searchField()).toHaveValue('test')
+    await expect(testPage.startDateField()).toHaveValue('')
+    await expect(testPage.endDateField()).toHaveValue('')
   })
 })
