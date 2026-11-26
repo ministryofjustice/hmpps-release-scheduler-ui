@@ -3,6 +3,7 @@ import { Prisoner } from '../../services/apis/model/prisoner'
 import { PrisonerDetails, JourneyData } from '../journeys'
 import { Breadcrumbs } from '../../middleware/history/breadcrumbs'
 import { components } from '../releaseSchedulerApi'
+import { SuccessBanner } from '../../middleware/notifications/successBanner'
 
 export declare module 'express-session' {
   // Declare that the session will potentially contain these additional fields
@@ -30,6 +31,8 @@ export declare global {
         release?: components['schemas']['ReleaseDetail']
         auditHistory?: components['schemas']['AuditHistory']
       }
+
+      flashSuccessBanner(banner: SuccessBanner): void
     }
 
     interface Response {
@@ -84,6 +87,7 @@ export declare global {
         }
       }
       formResponses?: Record<string, unknown>
+      successBanner?: SuccessBanner | undefined
       prisonerDetails?: PrisonerDetails
       appInsightsConnectionString?: string
       appInsightsApplicationName?: string

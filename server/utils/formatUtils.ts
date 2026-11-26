@@ -62,3 +62,13 @@ export const formatRefDataName = (val: string) => {
 export const addArticle = (word: string) => {
   return word && (['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'].includes(word[0]!) ? 'an ' : 'a ') + word
 }
+
+export const joinItems = (words: string[]) => {
+  if (!words.length) return ''
+  if (words.length === 1) return words[0]!
+  if (words.length === 2) return `${words[0]} and ${words[1]}`
+
+  const firsts = words.slice(0, words.length - 1)
+  const last = words[words.length - 1]
+  return `${firsts.join(', ')} and ${last}`
+}

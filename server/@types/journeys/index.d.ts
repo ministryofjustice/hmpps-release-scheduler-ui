@@ -47,5 +47,6 @@ type UpdateReleaseJourney = {
   comments: string | null
   unscheduleReason: string | null
   result: components['schemas']['ReleaseDetail']
+  auditHistory: components['schemas']['AuditedAction'][]
   updateType: 'details' | 'unschedule' | 'verify'
 }>

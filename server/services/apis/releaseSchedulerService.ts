@@ -68,11 +68,11 @@ export default class ReleaseSchedulerService {
   }
 
   async putRelease(context: ApiRequestContext, releaseId: string, request: components['schemas']['ReleaseActions']) {
-    await this.restClient
+    const response = await this.restClient
       .withContext(context)
       .put<components['schemas']['AuditHistory']>({ path: `/releases/${releaseId}`, data: request })
 
-    return this.getRelease(context, releaseId)
+    return { release: await this.getRelease(context, releaseId), auditHistory: response.content }
   }
 
   private handleGetError = (error: unknown) => {
