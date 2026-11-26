@@ -59,7 +59,7 @@ export default function createApp(services: Services): express.Application {
     }),
     (_req, res) => {
       res.status(401)
-      return res.render('autherror')
+      return res.render('pages/service-not-authorised')
     },
   )
 
