@@ -1,3 +1,5 @@
+import { components } from '../../server/@types/releaseSchedulerApi'
+
 export const testPrisonerDetails = {
   prisonerNumber: 'A9965EA',
   bookingId: '1223167',
@@ -46,4 +48,45 @@ export const testPrisonerDetails = {
   phoneNumbers: [],
   identifiers: [],
   allConvictedOffences: [],
+}
+
+export const testPendingRelease: components['schemas']['ReleaseDetail'] = {
+  id: 'pending-release-id',
+  approvedReleaseDate: '2001-01-01',
+  autoReleaseDate: '2001-01-02',
+  calculatedDates: [
+    {
+      type: 'APD',
+      category: 'ApprovedReleaseDate',
+      date: '2001-01-03',
+    },
+  ],
+  person: {
+    identifier: testPrisonerDetails.prisonerNumber,
+    firstName: testPrisonerDetails.firstName,
+    lastName: testPrisonerDetails.lastName,
+  },
+  status: { code: 'PENDING', description: 'Awaiting details' },
+}
+
+export const testUnverifiedRelease: components['schemas']['ReleaseDetail'] = {
+  id: 'unverified-release-id',
+  approvedReleaseDate: '2001-01-01',
+  autoReleaseDate: '2001-01-02',
+  confirmedReleaseDate: '2001-01-03',
+  reason: { code: 'R1', description: 'Reason One' },
+  comments: 'Lorem ipsum',
+  calculatedDates: [
+    {
+      type: 'APD',
+      category: 'ApprovedReleaseDate',
+      date: '2001-01-03',
+    },
+  ],
+  person: {
+    identifier: testPrisonerDetails.prisonerNumber,
+    firstName: testPrisonerDetails.firstName,
+    lastName: testPrisonerDetails.lastName,
+  },
+  status: { code: 'UNVERIFIED', description: 'Unverified' },
 }

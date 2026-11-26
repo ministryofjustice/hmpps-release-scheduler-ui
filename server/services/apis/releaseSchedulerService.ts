@@ -15,7 +15,7 @@ export default class ReleaseSchedulerService {
       config.apis.releaseSchedulerApi,
       logger,
       authenticationClient,
-      false,
+      true,
       (retry?: boolean) => (err: Error, res: SuperAgentResponse) => {
         if (!retry) return false
         if (err) return true
