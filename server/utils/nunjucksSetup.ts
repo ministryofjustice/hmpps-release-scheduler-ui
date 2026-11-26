@@ -122,16 +122,16 @@ export default function nunjucksSetup(app: express.Express): void {
     'releaseDateLabel',
     (code: string) =>
       ({
-        CRD: 'Conditional Release Date',
-        ARD: 'Automatic Release Date',
-        NPD: 'Non-Parole Date',
-        PRRD: 'Post Recall Release Date',
-        MTD: 'Mid Transfer Date',
-        DPRRD: 'Detention and Training Order Post Recall Release Date',
-        HDCAD: 'Home Detention Curfew Approved Date',
-        APD: 'Approved Parole Date',
-        LTD: 'Late Transfer Date',
-        ETD: 'Earliest Transfer Date',
+        CRD: 'Conditional release date (CRD)',
+        ARD: 'Automatic release date (ARD)',
+        NPD: 'Non-parole date (NPD)',
+        PRRD: 'Post recall release date (PRRD)',
+        MTD: 'Mid transfer date (MTD)',
+        DPRRD: 'Detention and training order post recall release date (DPRRD)',
+        HDCAD: 'Home detention curfew approved date (HDCAD)',
+        APD: 'Approved parole date (APD)',
+        LTD: 'Late transfer date (LTD)',
+        ETD: 'Earliest transfer date (ETD)',
       })[code],
   )
 }

@@ -50,7 +50,7 @@ test.describe('/schedule-a-release/details', () => {
     await testPage.verifyAnswer('Auto release date', '2 January 2001')
     await testPage.verifyAnswer('Approved  release date', '1 January 2001')
     await page.getByText('View calculated release dates').click()
-    await testPage.verifyAnswer('Approved Parole Date', '3 January 2001')
+    await testPage.verifyAnswer('Approved parole date (APD)', '3 January 2001')
 
     // verify validation error
     await testPage.commentsField().fill('n'.repeat(251))
