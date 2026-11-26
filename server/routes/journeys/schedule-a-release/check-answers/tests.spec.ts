@@ -67,7 +67,7 @@ test.describe('/schedule-a-release/check-answers', () => {
     await testPage.verifyAnswer('Release reason', 'Reason One')
     await testPage.verifyAnswer('Comments', 'Lorem ipsum')
 
-    await testPage.verifyLink('Change confirmed released date', /details#confirmedReleaseDate/)
+    await testPage.verifyLink('Change confirmed release date', /details#confirmedReleaseDate/)
     await testPage.verifyLink('Change release reason', /details#reason/)
     await testPage.verifyLink('Change comments', /details#comments/)
 
