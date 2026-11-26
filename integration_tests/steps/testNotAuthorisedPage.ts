@@ -7,7 +7,7 @@ import { login } from '../testUtils'
 export const testNotAuthorisedPage = async (
   page: Page,
   url: string,
-  roles: string[] = ['ROLE_TRANSFER_SCHEDULER_RO'],
+  roles: string[] = ['ROLE_RELEASE_SCHEDULER_RO'],
 ) => {
   await Promise.all([auth.stubSignInPage(), stubComponents()])
   await login(page, { roles })
