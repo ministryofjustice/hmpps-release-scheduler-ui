@@ -53,17 +53,19 @@ export class UpdateReleaseDetailsController {
     const { backUrl, auditHistory, release } = req.journeyData.updateRelease!
 
     if (auditHistory?.length) {
-      const propertiesChanged = auditHistory[0]!.changes.map(
-        ({ propertyName }) =>
-          ({
-            confirmedReleaseDate: 'confirmed release date',
-            reason: 'release reason',
-            comments: 'comments',
-          })[propertyName] ?? propertyName,
-      )
+      const propertiesChanged = auditHistory[0]!.changes
+        .map(
+          ({ propertyName }) =>
+            ({
+              confirmedReleaseDate: 'confirmed release date',
+              reason: 'release reason',
+              comments: 'comments',
+            })[propertyName] ?? propertyName,
+        )
+        .sort((a, b) => b.length - a.length) // sort by the order of: confirmed release date, release reason, and comments
 
       req.flashSuccessBanner({
-        heading: `${sentenceCase(joinItems(propertiesChanged))} changed `,
+        heading: `${sentenceCase(joinItems(propertiesChanged) ?? 'Scheduled release')} changed `,
         text: release.status.code === 'VERIFIED' ? 'This release will need to be verified again.' : '',
       })
     }
