@@ -4,6 +4,7 @@ export enum Page {
   HOMEPAGE = 'HOMEPAGE',
   SCHEDULE_RELEASE = 'SCHEDULE_RELEASE',
   MANAGE_RELEASE = 'MANAGE_RELEASE',
+  UPDATE_RELEASE = 'UPDATE_RELEASE',
 }
 
 export interface PageViewEventDetails {
