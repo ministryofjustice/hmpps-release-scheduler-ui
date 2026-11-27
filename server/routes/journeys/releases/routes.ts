@@ -6,6 +6,9 @@ import { UpdateReleaseDetailsRoutes } from './details/routes'
 import { UpdateReleaseConfirmationRoutes } from './confirmation/routes'
 import { VerifyReleaseRoutes } from './verify/routes'
 import { UnscheduleReleaseRoutes } from './unschedule/routes'
+import { Page } from '../../../services/auditService'
+import preventNavigationToExpiredJourneys from '../../../middleware/journey/preventNavigationToExpiredJourneys'
+import journeyStateGuard from '../../../middleware/journey/journeyStateGuard'
 
 export const UpdateReleaseRoutes = (services: Services) => {
   const { router, get } = BaseRouter()
@@ -50,6 +53,19 @@ export const UpdateReleaseRoutes = (services: Services) => {
 
       res.redirect(`../../${redirectUrl}`)
     },
+  )
+
+  get(
+    '*any',
+    Page.UPDATE_RELEASE,
+    (req, res, next) => {
+      if (req.journeyData.prisonerDetails) {
+        res.setAuditDetails.prisonNumber(req.journeyData.prisonerDetails.prisonerNumber)
+      }
+      next()
+    },
+    preventNavigationToExpiredJourneys(),
+    journeyStateGuard({}),
   )
 
   router.use('/details', UpdateReleaseDetailsRoutes(services))
