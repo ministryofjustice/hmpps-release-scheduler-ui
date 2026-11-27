@@ -4,7 +4,7 @@ import { optionalString } from '../../../../utils/validations/validateString'
 
 export const schema = createSchema({
   confirm: z
-    .enum(['YES', 'NO'], { message: 'Select if you want to cancel this release' })
+    .enum(['YES', 'NO'], { message: 'Select if you want to unschedule this release' })
     .transform(val => val === 'YES'),
   reason: optionalString(),
 })
