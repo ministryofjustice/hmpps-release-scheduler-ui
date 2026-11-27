@@ -39,7 +39,7 @@ test.describe('/releases/verify', () => {
     await page.goto(`/${journeyId}/releases/start-edit/${testUnverifiedRelease.id}/verify`)
   }
 
-  test('should enter release details and proceed to check answers', async ({ page }) => {
+  test('should enter release details and proceed to confirmation', async ({ page }) => {
     const journeyId = uuidV4()
     await startJourney(page, journeyId)
 

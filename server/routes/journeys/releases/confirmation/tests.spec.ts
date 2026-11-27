@@ -10,6 +10,7 @@ import { testNotAuthorisedPage } from '../../../../../integration_tests/steps/te
 import { stubGetRelease, stubPutRelease } from '../../../../../integration_tests/mockApis/releaseSchedulerApi'
 import { testUnverifiedRelease } from '../../../../../integration_tests/data/testData'
 import { ManageReleaseVerifyPage } from '../verify/test.page'
+import { ManageReleaseUnschedulePage } from '../unschedule/test.page'
 
 test.describe('/releases/confirmation unauthorised', () => {
   test('should show unauthorised error', async ({ page }) => {
@@ -58,6 +59,21 @@ test.describe('/releases/confirmation', () => {
     await testPage.verifyAnswer('Release reason', 'Reason One')
     await testPage.verifyAnswer('Comments', 'Lorem ipsum')
 
+    await testPage.verifyLink('Schedule or manage another release ', '/')
+  })
+
+  test('should show confirmation for unscheduling a release', async ({ page }) => {
+    const journeyId = uuidV4()
+    await startJourney(page, journeyId, 'unschedule')
+
+    const unschedulePage = await new ManageReleaseUnschedulePage(page).verifyContent()
+    await unschedulePage.yesRadio().click()
+    await unschedulePage.clickContinue()
+
+    // verify page content
+    const testPage = await new ManageReleaseConfirmationPage(page).verifyContent()
+
+    await expect(page.getByText('Release unscheduled for Prisoner-Name Prisoner-Surname')).toBeVisible()
     await testPage.verifyLink('Schedule or manage another release ', '/')
   })
 })
