@@ -17,9 +17,11 @@ export class VerifyReleaseController {
     try {
       const journey = req.journeyData.updateRelease!
 
-      journey.result = (await this.releaseSchedulerService.putRelease({ res }, journey.release.id, {
-        actions: [{ type: 'VerifyRelease' }],
-      }))!
+      journey.result = (
+        await this.releaseSchedulerService.putRelease({ res }, journey.release.id, {
+          actions: [{ type: 'VerifyRelease' }],
+        })
+      ).release!
       journey.updateType = 'verify'
       next()
     } catch (e) {

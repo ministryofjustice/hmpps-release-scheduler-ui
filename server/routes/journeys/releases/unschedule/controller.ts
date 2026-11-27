@@ -22,10 +22,12 @@ export class UnscheduleReleaseController {
     }
 
     try {
-      journey.result = (await this.releaseSchedulerService.putRelease({ res }, journey.release.id, {
-        actions: [{ type: 'UnscheduleRelease' }],
-        reason: req.body.reason,
-      }))!
+      journey.result = (
+        await this.releaseSchedulerService.putRelease({ res }, journey.release.id, {
+          actions: [{ type: 'UnscheduleRelease' }],
+          reason: req.body.reason,
+        })
+      ).release!
       journey.updateType = 'unschedule'
 
       req.journeyData.journeyCompleted = true

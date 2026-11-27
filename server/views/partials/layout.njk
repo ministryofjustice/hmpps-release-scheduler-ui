@@ -87,10 +87,16 @@
   <main class="govuk-main-wrapper {%- if mainClasses %} {{ mainClasses }}{% endif %}" id="main-content" {%- if mainLang %} lang="{{ mainLang }}"{% endif %} {{- govukAttributes(mainAttributes) }}>
     {% block content %}
     {% if successBanner %}
-      {{ govukNotificationBanner({
-        text: successBanner,
-        type: "success"
-      }) }}
+      {% call govukNotificationBanner({ type: "success" }) %}
+        {% if successBanner.heading %}
+          <h3 class="govuk-notification-banner__heading">{{ successBanner.heading }}</h3>
+        {% endif %}
+        {% if successBanner.html %}
+          <p class="govuk-body">{{ successBanner.html | safe }}</p>
+        {% elseif successBanner.text %}
+          <p class="govuk-body">{{ successBanner.text }}</p>
+        {% endif %}
+      {% endcall %}
     {% endif %}
 
     <div class="govuk-grid-row">

@@ -28,9 +28,11 @@ export class ScheduleReleasesCheckAnswersController {
         comments: comments ?? null,
       }
 
-      req.journeyData.scheduleRelease!.result = (await this.releaseSchedulerService.putRelease({ res }, release.id, {
-        actions: [request],
-      }))!
+      req.journeyData.scheduleRelease!.result = (
+        await this.releaseSchedulerService.putRelease({ res }, release.id, {
+          actions: [request],
+        })
+      ).release!
       next()
     } catch (e) {
       next(e)
